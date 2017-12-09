@@ -1,111 +1,167 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+    <!--
     android:paddingTop="?attr/actionBarSize"
-    >
 
-    <GridLayout
-        android:id="@+id/grid_layout"
+    -->
+
+    <TextView
+        android:id="@+id/player_turn_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="36sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <TableLayout
+        android:id="@+id/glGameBoard"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="500dp"
+        android:layout_centerHorizontal="true"
+
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-
         android:columnCount="3"
-        android:horizontalSpacing="10dp"
+        android:orientation="horizontal"
+        android:padding="8dp"
         android:rowCount="3"
-        android:rowOrderPreserved="false"
-        android:verticalSpacing="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toBottomOf="@+id/player_turn_tv">
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="3"
+            android:orientation="vertical"
+            android:rowCount="3">
 
-        <TextView
-            android:id="@+id/tv_00"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="center"
-            android:textSize="150sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/tv_00"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
-            android:id="@+id/tv_01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="textStart"
-            android:textSize="150sp" />
+            <TextView
+                android:id="@+id/tv_01"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
 
-        <TextView
-            android:id="@+id/tv_02"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textSize="150sp" />
+            <TextView
+                android:id="@+id/tv_02"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
 
-        <TextView
-            android:id="@+id/tv_10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="center"
-            android:textSize="150sp" />
+        </TableRow>
 
-        <TextView
-            android:id="@+id/tv_11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="center"
-            android:textSize="150sp" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textSize="150sp" />
+            <TextView
+                android:id="@+id/tv_10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
 
-        <TextView
-            android:id="@+id/tv_20"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="center"
-            android:textSize="150sp" />
+            <TextView
+                android:id="@+id/tv_11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
 
-        <TextView
-            android:id="@+id/tv_21"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textSize="150sp" />
+            <TextView
+                android:id="@+id/tv_12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
 
-        <TextView
-            android:id="@+id/tv_22"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="serif"
-            android:text="-"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="150sp" />
-    </GridLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_20"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
+
+            <TextView
+                android:id="@+id/tv_21"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
+
+            <TextView
+                android:id="@+id/tv_22"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+                android:textAlignment="center"
+                android:textSize="100sp" />
+
+        </TableRow>
+
+    </TableLayout>
 
 </android.support.constraint.ConstraintLayout>

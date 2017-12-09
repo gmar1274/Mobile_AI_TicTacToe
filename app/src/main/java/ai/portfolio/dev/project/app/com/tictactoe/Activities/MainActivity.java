@@ -1,7 +1,7 @@
 package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 
-import android.animation.AnimatorInflater;
-import android.animation.ObjectAnimator;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -21,14 +21,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import ai.portfolio.dev.project.app.com.tictactoe.Custom.CustomFlipAnimation;
+import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToe_Fragment;
+import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.OnFragmentInteractionListener;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
-import layout.TicTacToe_Fragment;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, TicTacToe_Fragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
 
     private static final int CONTENT_VIEW_ID = 10101010;
+    private Typeface TYPEFACE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -50,32 +51,39 @@ public class MainActivity extends AppCompatActivity
         if(savedInstanceState != null){
 
         }else{
-            //this.buttons = init();
-            //this.game = new TicTacToe();
-             //this.game.setPlayerTurn(this.flipCoin());
-
             final ConstraintLayout lay = (ConstraintLayout)this.findViewById(R.id.button_layout_constraint);
             Button game = (Button)this.findViewById(R.id.btn_ai);
-            ObjectAnimator anim = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getApplicationContext(), R.animator.flipping);
-            anim.setTarget(game);
-            anim.setDuration(100);
-            anim.start();
+            game.setTypeface(this.TYPEFACE);
+
+            CustomFlipAnimation flip = new CustomFlipAnimation(game,game,1000);
+            if (game.getVisibility() == View.GONE) {
+                flip.reverse();
+            }else{
+                game.startAnimation(flip);
+            }
+            try{
+                this.TYPEFACE = Typeface.createFromAsset(this.getAssets(),("fonts/gameFont.ttf"));
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            game.setTypeface(this.TYPEFACE);
+
             game.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     lay.setVisibility(View.GONE);
-                    addFragment(android.R.id.content,
+                    addFragment(R.id.main,
                             new TicTacToe_Fragment(),
                             TicTacToe_Fragment.FRAGMENT_TAG);
                 }
             });
 
             Button online = (Button)this.findViewById(R.id.btn_multiplayer);
-
-            ObjectAnimator anim2 = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getApplicationContext(), R.animator.flipping);
-            anim2.setTarget(online);
-            anim2.setDuration(3000);
-            anim2.start();
+            online.setTypeface(this.TYPEFACE);
+//            ObjectAnimator anim2 = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getApplicationContext(), R.animator.flipping);
+//            anim2.setTarget(online);
+//            anim2.setDuration(3000);
+//            anim2.start();
             online.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -102,6 +110,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -128,24 +137,25 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+     switch (id){
+         case R.id.nav_logout:
+             //do something
+             break;
+         case R.id.nav_settings:
+             openSettingsActivity();
+             break;
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+     }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void openSettingsActivity() {
+        this.startActivity(new Intent(this,SettingsActivity.class));
+    }
+
     protected void addFragment(@IdRes int containerViewId,
                                @NonNull Fragment fragment,
                                @NonNull String fragmentTag) {

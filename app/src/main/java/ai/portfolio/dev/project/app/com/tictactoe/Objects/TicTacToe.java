@@ -11,21 +11,16 @@ import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.IMinmax;
  */
 
 public class TicTacToe implements IMinmax, IGamePlay {
-
-
     private static final String AI_SYMBOL_GUI = "O";
     private static final String HUMAN_SYMBOL_GUI = "X";
-    private final int GAME_NOT_OVER = Integer.MIN_VALUE;
-
+    public final int GAME_NOT_OVER = Integer.MIN_VALUE;
+    private  int[][] board;
+    private String HUMAN_NAME,AI_NAME;
 
 
     public enum DIFFICULTY {EASY, INTERMEDIATE, HARD}
-
-    private int[][] board;
-
+    private int BEST_SCORE = 400;//absolute value
     public enum PLAYER {HUMAN, AI}
-
-
     /**
      * @param player
      * @return symbol for game board
@@ -38,8 +33,7 @@ public class TicTacToe implements IMinmax, IGamePlay {
     private PLAYER currentTurn;
     private DIFFICULTY difficulty;
     private int maxDepth;
-    private int alpha, beta;
-    private final int HUMAN_SYMBOL = 1, AI_SYMBOL = 2, EMPTY = Integer.MIN_VALUE, HUMAN_WIN = -5000, AI_WIN = 5000, TIE = 0;
+    public final int HUMAN_SYMBOL = 1, AI_SYMBOL = 2, EMPTY = Integer.MIN_VALUE, HUMAN_WIN = -400, AI_WIN = 400,TIE=1;
     private int HUMAN_SCORE, AI_SCORE;
 
     /**
@@ -47,113 +41,99 @@ public class TicTacToe implements IMinmax, IGamePlay {
      */
     public TicTacToe() {
         this.currentTurn = null;
-        this.difficulty = null;
+        this.difficulty = DIFFICULTY.HARD;
         this.maxDepth = this.maxDepth(this.difficulty);
         this.board = this.init();
-        this.alpha = Integer.MIN_VALUE;
-        this.beta = Integer.MAX_VALUE;
         this.HUMAN_SCORE = 0;
         this.AI_SCORE = 0;
+        this.HUMAN_NAME="Player";
+        this.AI_NAME="Rover";
     }
-
     public TicTacToe(DIFFICULTY diff, PLAYER player) {
         super();
     }
-
-    /**
-     * MinMax algorithm with alpha-beta pruning
-     * @param board - initial game state
-     * @return Game Board
-     */
-    @Override
-    public AIMove AIMove(TicTacToe board) {
-        int best = -20000;
-        int score;
-        int alpha = this.alpha;
-        int beta = this.beta;
-        int ai_row = 0, ai_col = 0;
-        this.maxDepth = this.maxDepth(this.difficulty);
-        long start_time = System.nanoTime();
-        for (int row = 0; row < 3; ++row) {
-            for (int col = 0; col < 3; ++col) {
-                this.board[row][col] = AI_SYMBOL;// min max on computer .. max score
-                score = min(maxDepth - 1, alpha, beta);
-                if (score > best) {
-                    best = score;
-                    ai_row = row;
-                    ai_col = col;
-                }
-                this.board[row][col] = EMPTY;//undo move
-                if (alpha >= beta) {
-                    return new AIMove(ai_row, ai_col, System.nanoTime() - start_time);
+    public AIMove makeAIMove() {
+        long start = System.nanoTime();
+        int depth = this.maxDepth(this.difficulty), score, ai_row = 0, ai_col = 0;
+        int alpha = -this.BEST_SCORE, beta = this.BEST_SCORE;// assume alpha is worst move similarly beta best move(*Remember trying to maximize alpha and minimize beta)
+        int best = -this.BEST_SCORE;//AI wants positive
+        for (int row = 0; row < 3; row++) {// naively start at beginning spot
+            for (int col = 0; col < 3; col++) {// and look for an available next move
+                if (board[row][col] == EMPTY) {// if spot available *Recall (-infinity<==>empty) otherwise spot is taken.
+                    board[row][col] = AI_SYMBOL; // make move on board and generate child node
+                    score = min(depth - 1, alpha, beta);// recursively (Depth first search). Traverse the tree for best movea
+                    if (score > best) {
+                        ai_row = row;
+                        ai_col = col;
+                        best = score;
+                    }
+                    board[row][col] = EMPTY; // undo move
+                    if (alpha >= beta) {//prune condition stop exploring child nodes
+                        board[ai_row][ai_col] = AI_SYMBOL;
+                        long elapsed_time = System.nanoTime() - start;
+                        return new AIMove(ai_row,ai_col,elapsed_time);
+                    }
                 }
             }
         }
-        return new AIMove(ai_row, ai_col, System.nanoTime() - start_time);
+        board[ai_row][ai_col] = AI_SYMBOL;
+        long elapsed_time = System.nanoTime() - start;
+        return new AIMove(ai_row,ai_col, elapsed_time);
     }
-
     /**
-     * Minimizer function for minmax algorithm
+     * Minimizer function using alpha-beta pruning
      *
-     * @param depth
-     * @return
+     * @return score - which is the heuristic value
      */
-    @Override
     public int min(int depth, int alpha, int beta) {
-        int best = 20000;
+        int best = 20000;//assume worst case
         int score;
-        int utility = this.check4Winner();
-        if (utility != GAME_NOT_OVER) return utility;
-        if (depth == 0) return evaluate();
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                if (board[i][j] == EMPTY) {
-                    this.board[i][j] = HUMAN_SYMBOL;//make human move
+        int utility_value = check4Winner();
+        if (utility_value != GAME_NOT_OVER) return utility_value;
+        if (depth == 0) return 0;//heuristic value
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (board[row][col] == EMPTY) {
+                    board[row][col] = HUMAN_SYMBOL; // make move
+                    score = max(depth - 1, alpha, beta);
+                    if (score < best) {//update best
+                        best = score;
+                        beta = best;//update beta
+                    }
+                    board[row][col] = EMPTY; // undo move
+                    if (beta <= alpha) { return best; }
                 }
-                score = max(depth - 1, alpha, beta);
-                if (score < best) {
-                    beta = score;
-                    best = score;
-                }
-                this.board[i][j] = EMPTY;//undoa
-                if (alpha >= beta) return best;
             }
         }
-
         return best;
-
     }
 
     /**
-     * Maximizer function for minmax algorithm
+     * Maximizer function using alpha beta pruning.
      *
-     * @param depth
-     * @return
+     * @return score - heuristic value
      */
-    @Override
     public int max(int depth, int alpha, int beta) {
-
-        int best = -20000;
+        int best = -20000;//assumed to be worst
         int score;
-        int utility = this.check4Winner();
-        if (utility != GAME_NOT_OVER) return utility;
-        if (depth == 0) return evaluate();
-        for (int i = 0; i < 3; ++i) {
-            for (int j = 0; j < 3; ++j) {
-                if (this.board[i][j] == EMPTY) {
-                    this.board[i][j] = AI_SYMBOL;
+        int utility_value = check4Winner();
+        if (utility_value != GAME_NOT_OVER) return utility_value;
+        if (depth == 0) return this.evaluate();//heuristic value
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (board[row][col] == EMPTY) {//if empty space
+                    board[row][col] = AI_SYMBOL; // make move on (new game state aka child node)
+                    score = min(depth - 1, alpha, beta);
+                    if (score > best) {//update best
+                        best = score;
+                        alpha = best;//update alpha
+                    }
+                    board[row][col] = EMPTY; // undo move
+                    if (alpha >= beta) { return best; } //prune
                 }
-                score = min(depth - 1, alpha, beta);
-                if (score > best) {
-                    alpha = score;
-                    best = score;
-                }
-                this.board[i][j] = EMPTY;//undo
-                if (alpha >= beta) return best;
             }
         }
         return best;
-
     }
 
     /**
@@ -190,7 +170,6 @@ public class TicTacToe implements IMinmax, IGamePlay {
             }
         }
         return TIE;//if spots all taken and no winner then tie.
-
     }
 
     int maxDepth(DIFFICULTY diff) {
@@ -216,7 +195,7 @@ public class TicTacToe implements IMinmax, IGamePlay {
         int[][] b = new int[3][3];
         for (int r = 0; r < 3; ++r) {
             for (int c = 0; c < 3; ++c) {
-                b[r][c] = Integer.MIN_VALUE;
+                b[r][c] = EMPTY;
             }
         }
         return b;
@@ -309,5 +288,38 @@ public class TicTacToe implements IMinmax, IGamePlay {
             s+="]";
         }
         return s;
+    }
+
+
+    public String getCurrentPlayerName() {
+        return (this.currentTurn.equals(PLAYER.HUMAN)?HUMAN_NAME:AI_NAME);
+    }
+
+    public boolean isAIMove() {
+        return this.currentTurn.equals(PLAYER.AI);
+    }
+
+    /**
+     *
+     * @param winner score
+     * @return Readable displayble name
+     */
+    public String getWinner(int winner) {
+        if(winner==HUMAN_WIN)return this.HUMAN_NAME;
+        else if(winner==AI_WIN)return this.AI_NAME;
+        else return  "TIE";
+    }
+    public boolean isOver() {
+        return this.check4Winner()!= GAME_NOT_OVER;
+    }
+
+    /**
+     * Lazy hack... ai move sets the position then i need to update the gui but gui checks if space is empty first
+     * so i have to und to redo move...
+     * @param row
+     * @param col
+     */
+    public void undo(int row, int col) {
+        this.board[row][col] = EMPTY;
     }
 }
