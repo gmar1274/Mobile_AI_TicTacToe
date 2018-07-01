@@ -1,4 +1,4 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,158 +10,213 @@
 
     -->
 
-    <TextView
-        android:id="@+id/player_turn_tv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:textSize="36sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-
     <TableLayout
         android:id="@+id/glGameBoard"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_centerHorizontal="true"
-
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center|fill"
+        android:background="@android:color/black"
         android:columnCount="3"
-        android:orientation="horizontal"
-        android:padding="8dp"
+        android:gravity="center"
+        android:orientation="vertical"
         android:rowCount="3"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_turn_tv">
+        android:stretchColumns="*">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:columnCount="3"
-            android:orientation="vertical"
-            android:rowCount="3">
+            android:layout_gravity="fill"
+            android:gravity="fill"
+            android:orientation="horizontal">
 
-            <TextView
+
+            <Button
                 android:id="@+id/tv_00"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="0"
+
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+                android:textSize="50sp" />
 
-            <TextView
+            <Button
                 android:id="@+id/tv_01"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp" />
+                android:textSize="50sp" />
 
-            <TextView
+            <Button
                 android:id="@+id/tv_02"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="2"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp" />
+                android:textSize="50sp" />
 
         </TableRow>
 
         <TableRow
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_gravity="fill"
+            android:gravity="fill"
+            android:orientation="horizontal">
 
-            <TextView
+            <Button
                 android:id="@+id/tv_10"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="0"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
-                android:textAlignment="center"
-                android:textSize="100sp" />
 
-            <TextView
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="50sp" />
+
+            <Button
                 android:id="@+id/tv_11"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
-                android:textAlignment="center"
-                android:textSize="100sp" />
 
-            <TextView
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="50sp" />
+
+            <Button
                 android:id="@+id/tv_12"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="2"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp" />
+                android:textSize="50sp" />
 
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_gravity="fill"
+            android:gravity="fill"
+            android:orientation="horizontal">
 
-            <TextView
+            <Button
                 android:id="@+id/tv_20"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_column="0"
+
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp" />
+                android:textSize="50sp" />
 
-            <TextView
+            <Button
                 android:id="@+id/tv_21"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:background="@color/colorGameCell"
-                android:textAlignment="center"
-                android:textSize="100sp" />
+                android:layout_column="1"
 
-            <TextView
-                android:id="@+id/tv_22"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:background="@color/colorGameCell"
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textSize="100sp" />
+                android:textSize="50sp" />
+
+            <Button
+                android:id="@+id/tv_22"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@color/colorGameCell"
+
+                android:fontFamily="@font/game_font"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="50sp" />
 
         </TableRow>
 
     </TableLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="top"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/player_turn_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:fontFamily="@font/game_font"
+            android:padding="8dp"
+            android:textColor="@android:color/background_light"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/wins_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/game_font"
+            android:text="Wins:"
+            android:textColor="?attr/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/loses_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/game_font"
+            android:text="Loses:"
+            android:textColor="?attr/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/draws_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/game_font"
+            android:text="Draws:"
+            android:textColor="?attr/colorPrimaryDark" />
+    </LinearLayout>
+
+</FrameLayout>

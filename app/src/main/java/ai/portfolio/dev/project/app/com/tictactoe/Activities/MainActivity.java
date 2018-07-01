@@ -1,7 +1,7 @@
 package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 
+
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -26,12 +26,9 @@ import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToe_Fragment;
 import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.OnFragmentInteractionListener;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
 
-    private static final int CONTENT_VIEW_ID = 10101010;
-    private Typeface TYPEFACE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity
         }else{
             final ConstraintLayout lay = (ConstraintLayout)this.findViewById(R.id.button_layout_constraint);
             Button game = (Button)this.findViewById(R.id.btn_ai);
-            game.setTypeface(this.TYPEFACE);
 
             CustomFlipAnimation flip = new CustomFlipAnimation(game,game,1000);
             if (game.getVisibility() == View.GONE) {
@@ -61,13 +57,6 @@ public class MainActivity extends AppCompatActivity
             }else{
                 game.startAnimation(flip);
             }
-            try{
-                this.TYPEFACE = Typeface.createFromAsset(this.getAssets(),("fonts/gameFont.ttf"));
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            game.setTypeface(this.TYPEFACE);
-
             game.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -79,7 +68,6 @@ public class MainActivity extends AppCompatActivity
             });
 
             Button online = (Button)this.findViewById(R.id.btn_multiplayer);
-            online.setTypeface(this.TYPEFACE);
 //            ObjectAnimator anim2 = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getApplicationContext(), R.animator.flipping);
 //            anim2.setTarget(online);
 //            anim2.setDuration(3000);

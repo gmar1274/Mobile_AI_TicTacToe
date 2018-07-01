@@ -2,7 +2,6 @@ package ai.portfolio.dev.project.app.com.tictactoe.Fragments;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,45 +27,23 @@ import ai.portfolio.dev.project.app.com.tictactoe.R;
  * Activities that contain this fragment must implement the
  * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link TicTacToe_Fragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractionListener {
     private static final long SPLASH_TIME_OUT = 4000;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private final String SPLASH = "SPLASH";
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     public static final String FRAGMENT_TAG = "TicTacToe_Fragment";
-    private TicTacToe game;
+    private TicTacToe mGameEngine;
     private final String HUMAN = "X", AI = "O";
-    private TextView[] cells;
+    private Button[] mButtonGrid;
     private OnFragmentInteractionListener mListener;
     private TextView display_turn;
-    private Typeface TYPEFACE;
 
     public TicTacToe_Fragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment tic_tac_toe_gameboard.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TicTacToe_Fragment newInstance(String param1, String param2) {
-        TicTacToe_Fragment fragment = new TicTacToe_Fragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,18 +56,16 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        this.TYPEFACE = getGameTypeface();
-        this.game = new TicTacToe();
-        this.game.setPlayerTurn(this.game.flipCoin());
+        this.mGameEngine = new TicTacToe();
+        this.mGameEngine.setPlayerTurn(this.mGameEngine.flipCoin());
         this.display_turn = (TextView) view.findViewById(R.id.player_turn_tv);
-        this.cells = init(view);
+        this.mButtonGrid = init(view);
         displayBeginGame(view);
     }
 
     private void displayBeginGame(View view) {
-        this.display_turn.setText(game.getCurrentPlayerName());
-        this.display_turn.setTypeface(this.TYPEFACE);
-        this.display_turn.setTextColor(this.getCurrentPlayerColor(game.getCurrentPlayer()));
+        this.display_turn.setText(mGameEngine.getCurrentPlayerName());
+        this.display_turn.setTextColor(this.getCurrentPlayerColor(mGameEngine.getCurrentPlayer()));
         this.display_turn.setShadowLayer(100, 1, 1, Color.BLACK);
         CustomFlipAnimation flip = new CustomFlipAnimation(this.display_turn, this.display_turn, 1000);
         if (this.display_turn.getVisibility() == View.GONE) {
@@ -105,7 +81,7 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
 
         //    }
         //}, SPLASH_TIME_OUT);
-        if (game.isAIMove()) {
+        if (mGameEngine.isAIMove()) {
             doAiMove();
         }
     }
@@ -114,72 +90,74 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
      * makeMove()
      */
     private void doAiMove() {
-        AIMove move = game.makeAIMove();
+        AIMove move = mGameEngine.makeAIMove();
         int row = move.getRow();
         int col = move.getCol();
-        this.game.undo(row,col);
+        this.mGameEngine.undo(row,col);
         Log.e("AI MOVE: ","row: "+row+" col: "+col);
         this.makeMove(row, col);
     }
-    private TextView[] init(View view) {
-        TextView[] b = new TextView[9];
-        TextView tv1 = (TextView) view.findViewById(R.id.tv_00);
+    private Button[] init(View view) {
+
+
+        Button[] b = new Button[9];
+        Button tv1 = (Button) view.findViewById(R.id.tv_00);
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(0, 0);
             }
         });
-        TextView tv2 = (TextView) view.findViewById(R.id.tv_01);
+        Button tv2 = (Button) view.findViewById(R.id.tv_01);
         tv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(0, 1);
             }
         });
-        TextView tv3 = (TextView) view.findViewById(R.id.tv_02);
+        Button tv3 = (Button) view.findViewById(R.id.tv_02);
         tv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(0, 2);
             }
         });
-        TextView tv4 = (TextView) view.findViewById(R.id.tv_10);
+        Button tv4 = (Button) view.findViewById(R.id.tv_10);
         tv4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(1, 0);
             }
         });
-        TextView tv5 = (TextView) view.findViewById(R.id.tv_11);
+        Button tv5 = (Button) view.findViewById(R.id.tv_11);
         tv5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(1, 1);
             }
         });
-        TextView tv6 = (TextView) view.findViewById(R.id.tv_12);
+        Button tv6 = (Button) view.findViewById(R.id.tv_12);
         tv6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(1, 2);
             }
         });
-        TextView tv7 = (TextView) view.findViewById(R.id.tv_20);
+        Button tv7 = (Button) view.findViewById(R.id.tv_20);
         tv7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(2, 0);
             }
         });
-        TextView tv8 = (TextView) view.findViewById(R.id.tv_21);
+        Button tv8 = (Button) view.findViewById(R.id.tv_21);
         tv8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeMove(2, 1);
             }
         });
-        TextView tv9 = (TextView) view.findViewById(R.id.tv_22);
+        Button tv9 = (Button) view.findViewById(R.id.tv_22);
         tv9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -200,27 +178,26 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
 
     private void makeMove(int row, int col) {
 
-        if (game.isAvailable(row, col)) {
+        if (mGameEngine.isAvailable(row, col)) {
             Toast.makeText(getContext(), "Space taken silly!", Toast.LENGTH_SHORT).show();
             return;
         }
         try {
             int move = (row * 3) + col;
-            TextView cell = this.cells[move];
-            game.makeMove(row, col, game.getCurrentPlayer());
-            cell.setText(game.getCurrentPlayerSymbol().toUpperCase());
-            cell.setTypeface(TYPEFACE);
-            cell.setTextColor(this.getCurrentPlayerColor(game.getCurrentPlayer()));
-            if (game.isOver()) {
-                int winner = game.check4Winner();
-                if (winner == game.TIE) {
+            Button cell = this.mButtonGrid[move];
+            mGameEngine.makeMove(row, col, mGameEngine.getCurrentPlayer());
+            cell.setText(mGameEngine.getCurrentPlayerSymbol().toUpperCase());
+            cell.setTextColor(this.getCurrentPlayerColor(mGameEngine.getCurrentPlayer()));
+            if (mGameEngine.isOver()) {
+                int winner = mGameEngine.check4Winner();
+                if (winner == mGameEngine.TIE) {
                     Toast.makeText(this.getActivity(), "It's a draw.", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(this.getActivity(), game.getWinner(winner) + " wins!!!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this.getActivity(), mGameEngine.getWinner(winner) + " wins!!!", Toast.LENGTH_LONG).show();
                 }
             }else {
                 nextTurn();
-                if(game.isAIMove())this.doAiMove();
+                if(mGameEngine.isAIMove())this.doAiMove();
             }
         } catch (Exception e) {
             Log.e("Error resources: ", e.getMessage().toString() + "\n" + e.getStackTrace().toString());
@@ -232,11 +209,11 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
      * Make next move and display whos turn it is
      */
     private void nextTurn() {
-        game.nextTurn();
+        mGameEngine.nextTurn();
         //Log.e("Next Turn: ",game.getCurrentPlayerName());
         //Log.e("Color resorice: ",this.getCurrentPlayerColor(game.getCurrentPlayer())+"");
-        this.display_turn.setText(game.getCurrentPlayerName());
-        this.display_turn.setTextColor(this.getCurrentPlayerColor(game.getCurrentPlayer()));
+        this.display_turn.setText(mGameEngine.getCurrentPlayerName());
+        this.display_turn.setTextColor(this.getCurrentPlayerColor(mGameEngine.getCurrentPlayer()));
     }
 
     @Override
@@ -301,13 +278,4 @@ public class TicTacToe_Fragment extends Fragment implements OnFragmentInteractio
         return 0;
     }
 
-    public Typeface getGameTypeface() {
-        Typeface tf = null;
-        try {
-            tf = Typeface.createFromAsset(this.getActivity().getAssets(), ("fonts/gameFont.ttf"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tf;
-    }
 }
