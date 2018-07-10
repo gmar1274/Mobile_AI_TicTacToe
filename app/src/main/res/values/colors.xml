@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#309f6d</color>
     <color name="colorAccent">#fff678</color>
 
-    <color name="colorPlayer">#309f6d</color>
-    <color name="colorAI">#fff678</color>
+    <color name="colorPlayerOne">#309f6d</color>
+    <color name="colorPlayerTwo">#fff678</color>
     <color name="colorGameCell">#c8dadada</color>
 
 </resources>

@@ -1,8 +1,6 @@
 package ai.portfolio.dev.project.app.com.tictactoe.Fragments;
 
 import android.animation.ObjectAnimator;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,16 +10,11 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
-import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.OnFragmentInteractionListener;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link GameSplashFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *
  */
 public class GameSplashFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -34,12 +27,8 @@ public class GameSplashFragment extends Fragment {
     private String mParam2;
     private long time;
 
-    private OnFragmentInteractionListener mListener;
     public GameSplashFragment(){}
-    public GameSplashFragment(long time) {
-        // Required empty public constructor
-        this.time = time;
-    }
+
 
     /**
      * Use this factory method to create a new instance of
@@ -83,30 +72,6 @@ public class GameSplashFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_game_splash, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 
 }

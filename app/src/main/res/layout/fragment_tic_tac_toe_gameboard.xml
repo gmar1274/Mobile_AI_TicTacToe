@@ -11,7 +11,7 @@
     -->
 
     <TableLayout
-        android:id="@+id/glGameBoard"
+        android:id="@+id/gameBoardTL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center|fill"
@@ -22,7 +22,8 @@
         android:rowCount="3"
         android:stretchColumns="*">
 
-        <TableRow
+        <!--<TableRow
+            android:id="@+id/tableRow"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="fill"
@@ -31,7 +32,7 @@
 
 
             <Button
-                android:id="@+id/tv_00"
+                android:id="@+id/btn_00"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -45,7 +46,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_01"
+                android:id="@+id/btn_01"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
@@ -58,7 +59,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_02"
+                android:id="@+id/btn_02"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
@@ -81,7 +82,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/tv_10"
+                android:id="@+id/btn_10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -95,7 +96,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_11"
+                android:id="@+id/btn_11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
@@ -109,7 +110,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_12"
+                android:id="@+id/btn_12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
@@ -132,7 +133,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/tv_20"
+                android:id="@+id/btn_20"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
@@ -146,7 +147,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_21"
+                android:id="@+id/btn_21"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="1"
@@ -160,7 +161,7 @@
                 android:textSize="50sp" />
 
             <Button
-                android:id="@+id/tv_22"
+                android:id="@+id/btn_22"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
@@ -173,7 +174,7 @@
                 android:textAlignment="center"
                 android:textSize="50sp" />
 
-        </TableRow>
+        </TableRow>-->
 
     </TableLayout>
 

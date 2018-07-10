@@ -2,7 +2,6 @@ package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -23,11 +22,10 @@ import android.widget.Toast;
 
 import ai.portfolio.dev.project.app.com.tictactoe.Custom.CustomFlipAnimation;
 import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToe_Fragment;
-import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.OnFragmentInteractionListener;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
 
     @Override
@@ -165,13 +163,4 @@ public class MainActivity extends AppCompatActivity
                 .commit();
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
 }

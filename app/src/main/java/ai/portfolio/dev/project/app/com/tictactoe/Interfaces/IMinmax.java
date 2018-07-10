@@ -1,16 +1,18 @@
 package ai.portfolio.dev.project.app.com.tictactoe.Interfaces;
 
-import ai.portfolio.dev.project.app.com.tictactoe.Objects.AIMove;
+import ai.portfolio.dev.project.app.com.tictactoe.Objects.Move;
 
 /**
  * Created by gabe on 11/30/2017.
  */
 
 public interface IMinmax {
+
     /**
-     * @return AI move
+     * @see Move
+     * @return
      */
-    AIMove makeAIMove();
+    Move predictAIMove();
     /**
      * Minimizer function for minmax algorithm
      * @param depth
