@@ -58,4 +58,7 @@ public class Player {
     public boolean equals(Object obj){
         return obj instanceof Player && ((Player)obj).symbol.hashCode()==this.symbol.hashCode();
     }
+
+    public boolean isPlayerOne() {return this.getCode()==1;
+    }
 }

@@ -83,4 +83,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="AiName">Rover</string>
+    <string name="signin_other_error">Network error on Sign in.</string>
+
+    <string name="app_id">389329484198</string>
 </resources>
