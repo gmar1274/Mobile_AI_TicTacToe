@@ -16,6 +16,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
@@ -70,6 +71,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -78,13 +80,9 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         String p_one_name = "PLAYER ONE";
         String p_two_name = "ROVER";
         if(BuildConfig.DEBUG)p_one_name="Gabriel";
-        if(savedInstanceState != null){
-            GoogleSignInAccount account = savedInstanceState.getParcelable(GOOGLE_ARG);
-            p_one_name = account.getDisplayName();
-
-            if(savedInstanceState.getString(PLAYER_TWO_TAG)!= null)p_two_name=savedInstanceState.getString(PLAYER_TWO_TAG);
-        }else{
-            Log.e("BUNDLE....","NULLLLLLLLLLLLL");
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
+        if(account!=null) {
+            p_one_name = account.getGivenName()+" "+account.getFamilyName();
         }
 
         View view = inflater.inflate(R.layout.fragment_tic_tac_toe,
@@ -141,13 +139,13 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
             TableRow tableRow = new TableRow(this.getActivity());
             tableRow.setWeightSum(1.0f);
             final float scale = getContext().getResources().getDisplayMetrics().density;
-            int pixels = (int) (150 * scale + 0.5f);
+            int pixels = (int) (200 * scale + 0.5f);
             tableRow.setMinimumHeight(pixels);
-            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
             for (int col = 0; col < 3; ++col) {
                 final Move move = new Move(row, col);
                 final Button button = new Button(this.getActivity());
-                button.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT));
+                button.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
                 button.setText("");
                 button.setTextSize(TypedValue.COMPLEX_UNIT_PX, 200);
                 button.setTextAppearance(this.getActivity(),R.style.gameFontButton);

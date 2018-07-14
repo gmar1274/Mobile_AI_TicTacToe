@@ -47,7 +47,6 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
 import ai.portfolio.dev.project.app.com.tictactoe.Custom.CustomFlipAnimation;
 import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToeFragment;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity
     private void startSignInIntent() {
         // Configure sign-in to request the user's ID, email address, and basic
 // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestProfile().requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -176,10 +175,13 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case R.id.action_settings:
+                break;
+                default:
+                    break;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -191,8 +193,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_logout:
-                //do something
+            case R.id.nav_sign_out:
+                signOut();
                 break;
             case R.id.nav_settings:
                 openSettingsActivity();
@@ -546,6 +548,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         // at this point, the user is signed out.
+                        showToast("Signed out completed.");
                         finish();
                     }
                 });
@@ -554,15 +557,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        // Check for existing Google Sign In account, if the user is already signed in
-// the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if(account!=null){
-           if(BuildConfig.DEBUG) Log.e("LOGIN...","account: "+account.getDisplayName());
-
-        }else {
-            Log.e("LOGIN FALIED...","null account");
-        }
-
     }
 }
