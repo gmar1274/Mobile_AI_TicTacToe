@@ -10,5 +10,6 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="endColor">#ff1500</color>
+    <color name="buttonBG">#6c000000</color>
 
 </resources>

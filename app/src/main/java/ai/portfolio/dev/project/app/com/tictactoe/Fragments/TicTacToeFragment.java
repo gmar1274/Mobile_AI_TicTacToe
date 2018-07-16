@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -49,6 +50,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     private TextView mPlayerTwoTV;
     private ObjectAnimator objectAnimator;
     private ObjectAnimator objectAnimator2;
+    private MediaPlayer mMediaPlayer;
 
 
     public TicTacToeFragment() {
@@ -79,6 +81,9 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mMediaPlayer = MediaPlayer.create(this.getActivity(),R.raw.game_play);
+        mMediaPlayer.setLooping(true);
+        mMediaPlayer.start();
         String p_one_name = "PLAYER ONE";
         String p_two_name = "ROVER";
         if(BuildConfig.DEBUG)p_one_name="Gabriel";
@@ -136,18 +141,26 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
     @Override
     public Button[][] attachButtonListeners() {
-         mButtons= new Button[3][3];
+
+        mButtons= new Button[3][3];
+        TableRow.LayoutParams params = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT);
+        int pad = 10;
+        params.setMargins(pad,pad,pad,pad);
         for (int row = 0; row < 3; ++row) {//create rows
             TableRow tableRow = new TableRow(this.getActivity());
             for (int col = 0; col < 3; ++col) {//create columns
                 final Move move = new Move(row, col);//associate a location for a move for the button pressed
                 final Button button = new Button(this.getActivity());//create button for each tictactoe gameboard dynamically
-                button.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT,1));//set layout
+                //button.setPadding(pad,pad,pad,pad);
+                button.setLayoutParams(params);//set layout
                 button.setTextAppearance(this.getActivity(),R.style.gameFontButton);//set custom font style
+                button.setBackgroundColor(TicTacToeFragment.this.getContext().getColor(R.color.buttonBG));
                 mButtons[row][col] = button;
                 mButtons[row][col].setOnClickListener(new View.OnClickListener() {//attach game logic on button click
                     @Override
                     public void onClick(View v) {
+                        MediaPlayer mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.coin);
+                        mp.start();
                         button.setText(mGameEngine.getmCurrentPlayer().getSymbol());//display current players move
                         button.setTextColor(mGameEngine.getmCurrentPlayer().getColor());//display the color of current player
                         button.setEnabled(false);//disable button
@@ -159,9 +172,13 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                             String msg = "";
                             if(winner==null){//it's a draw
                                 msg= "It's a draw.";
+                                mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.loss);
                             }else{
+                                if(winner.equals(mGameEngine.getmPlayerOne()))mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.won);
+                                else mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.loss);
                                 msg=winner.getName()+" wins!!!";
                             }
+                            mp.start();
                             displayMessage("Game Over",msg)//display winner by dialog and add a listener to button
                                     .setCancelable(false).setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                         @Override
@@ -240,5 +257,15 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
        mWinsTV.setText(String.valueOf(ge.getmPlayerOneWins()));
        mDrawsTV.setText(String.valueOf(ge.getmDraws()));
        mLosesTV.setText(String.valueOf(ge.getmPlayerTwoWins()));
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        mMediaPlayer.start();
+    }
+    @Override public void onPause(){
+        super.onPause();
+        mMediaPlayer.pause();
     }
 }

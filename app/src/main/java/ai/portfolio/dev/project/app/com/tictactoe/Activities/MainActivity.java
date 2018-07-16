@@ -3,6 +3,7 @@ package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -57,12 +58,16 @@ public class MainActivity extends AppCompatActivity
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "DEBUGGGGGGGGG";
+    private static final long ANY_ROLE = 0;
     private RoomConfig mJoinedRoomConfig;
+    private MediaPlayer mMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+         mMediaPlayer = MediaPlayer.create(this,R.raw.game_home);
+        mMediaPlayer.start();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -90,21 +95,18 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     lay.setVisibility(View.GONE);
-                    continueToGame(null);
+                    startInSinglePlayerMode(null);
                 }
             });
 
             Button online = (Button) this.findViewById(R.id.btn_multiplayer);
-//            ObjectAnimator anim2 = (ObjectAnimator) AnimatorInflater.loadAnimator(this.getApplicationContext(), R.animator.flipping);
-//            anim2.setTarget(online);
-//            anim2.setDuration(3000);
-//            anim2.start();
             online.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //Display search for game
                     //signInSilently(); this gets called immediately even without being clicked
-                    startSignInIntent();
+                    //startSignInIntent();
+                    startQuickGame(ANY_ROLE);
                 }
             });
 
@@ -114,7 +116,9 @@ public class MainActivity extends AppCompatActivity
     private void startSignInIntent() {
         // Configure sign-in to request the user's ID, email address, and basic
 // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestProfile().requestEmail()
+        GoogleSignInOptions gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -147,6 +151,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         //signInSilently();
+        mMediaPlayer.start();
     }
 
 
@@ -240,7 +245,8 @@ public class MainActivity extends AppCompatActivity
             if (result.isSuccess()) {
                 // The signed in account is stored in the result.
                 GoogleSignInAccount signedInAccount = result.getSignInAccount();
-                continueToGame(signedInAccount);
+                //startInSinglePlayerMode(signedInAccount);
+                startQuickGame(ANY_ROLE);
             } else {
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 handleSignInResult(task);
@@ -281,20 +287,17 @@ public class MainActivity extends AppCompatActivity
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
             showAlertDialog("SIGN IN WAS SUCCESSFUL! Welcome " + account.getDisplayName());
-            continueToGame(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-
             e.printStackTrace();
             //showAlertDialog("signInResult:failed code=" + e.getStatusCode()+" ... msg: "+e.getMessage());
         }
     }
 
-    private void continueToGame(GoogleSignInAccount account) {
+    private void startInSinglePlayerMode(GoogleSignInAccount account) {
         TicTacToeFragment frag = TicTacToeFragment.newInstance(account);
         displayFragment(R.id.main,frag,TicTacToeFragment.FRAGMENT_TAG);
     }
@@ -311,8 +314,8 @@ public class MainActivity extends AppCompatActivity
     private void startQuickGame(long role) {
         // auto-match criteria to invite one random automatch opponent.
         // You can also specify more opponents (up to 3).
-        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, role);
 
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1,role);
         // build the room config:
         RoomConfig roomConfig =
                 RoomConfig.builder(mRoomUpdateCallback)
@@ -326,10 +329,8 @@ public class MainActivity extends AppCompatActivity
 
         // Save the roomConfig so we can use it if we call leave().
         mJoinedRoomConfig = roomConfig;
-
-        // create room:
         Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .create(roomConfig);
+                    .create(roomConfig);
     }
 
     private RoomUpdateCallback mRoomUpdateCallback = new RoomUpdateCallback() {
@@ -558,4 +559,10 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
     }
+    @Override
+    public void onPause(){
+        super.onPause();
+        mMediaPlayer.pause();
+    }
+
 }
