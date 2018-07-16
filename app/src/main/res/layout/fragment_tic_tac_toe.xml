@@ -32,7 +32,7 @@
                 android:padding="8dp"
                 android:text="PLAYER"
                 android:textColor="@color/colorPlayerOne"
-                android:textSize="30sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -45,7 +45,7 @@
                 android:padding="8dp"
                 android:text="ROVER"
                 android:textColor="@color/colorPlayerTwo"
-                android:textSize="30sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
         </FrameLayout>
@@ -64,7 +64,7 @@
                 android:padding="8dp"
                 android:text="WINS"
                 android:textColor="@color/colorPlayerOne"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -77,7 +77,7 @@
                 android:padding="8dp"
                 android:text="TIES"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -90,7 +90,7 @@
                 android:padding="8dp"
                 android:text="LOSSES"
                 android:textColor="@color/colorPlayerTwo"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
 
@@ -117,7 +117,7 @@
                     android:fontFamily="@font/game_font"
                     android:text="0"
                     android:textColor="@color/colorPlayerOne"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -128,7 +128,7 @@
                     android:fontFamily="@font/game_font"
                     android:text="0"
                     android:textColor="@color/black"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -140,7 +140,7 @@
                     android:fontFamily="@font/game_font"
                     android:text="0"
                     android:textColor="@color/colorPlayerTwo"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
             </FrameLayout>
@@ -153,19 +153,14 @@
                 <TableLayout
                     android:id="@+id/gameBoardTL"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     android:layout_marginStart="8dp"
                     android:background="@android:color/black"
                     android:columnCount="3"
-                    android:orientation="vertical"
-                    android:rowCount="3"
-                    android:stretchColumns="*"
                     android:weightSum="3"
+                    android:stretchColumns="*"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

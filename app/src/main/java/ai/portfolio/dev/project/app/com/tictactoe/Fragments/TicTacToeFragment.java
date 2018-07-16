@@ -1,16 +1,17 @@
 package ai.portfolio.dev.project.app.com.tictactoe.Fragments;
 
-import android.animation.Animator;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -38,7 +39,6 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     private String mName;
 
 
-    private Player mPlayerOne, mPlayerTwo;
     private TableLayout tableLayout;
     private TextView mWinsTV;
     private TextView mLosesTV;
@@ -47,6 +47,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     private Button[][] mButtons;
     private TextView mPlayerOneTV;
     private TextView mPlayerTwoTV;
+    private ObjectAnimator objectAnimator;
+    private ObjectAnimator objectAnimator2;
 
 
     public TicTacToeFragment() {
@@ -93,9 +95,9 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         mDrawsTV = (TextView)view.findViewById(R.id.score_ties_tv);
 
 
-        mPlayerOne = new Player(p_one_name,"X");
+        Player mPlayerOne = new Player(p_one_name,"X");
         mPlayerOne.setColor(getActivity().getResources().getColor(R.color.colorPlayerOne));
-        mPlayerTwo = new Player("Rover","O");
+        Player  mPlayerTwo = new Player("Rover","O");
         mPlayerTwo.enableAI();
         mPlayerTwo.setColor(this.getActivity().getResources().getColor(R.color.colorPlayerTwo));
 
@@ -106,12 +108,12 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         mPlayerTwoTV.setText(p_two_name);
 
         tableLayout = (TableLayout) view.findViewById(R.id.gameBoardTL);
-        beginGame();
+        beginGame(mPlayerOne,mPlayerTwo);
 
         return view;
     }
 
-    private void beginGame() {
+    private void beginGame(Player mPlayerOne,Player mPlayerTwo) {
          mGameEngine =  newGame(this.getActivity(), mPlayerOne, mPlayerTwo);
          mButtons = attachButtonListeners();
          updateGui(mGameEngine.getmCurrentPlayer());
@@ -135,40 +137,42 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     @Override
     public Button[][] attachButtonListeners() {
          mButtons= new Button[3][3];
-        for (int row = 0; row < 3; ++row) {
+        for (int row = 0; row < 3; ++row) {//create rows
             TableRow tableRow = new TableRow(this.getActivity());
-            tableRow.setWeightSum(1.0f);
-            final float scale = getContext().getResources().getDisplayMetrics().density;
-            int pixels = (int) (200 * scale + 0.5f);
-            tableRow.setMinimumHeight(pixels);
-            tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            for (int col = 0; col < 3; ++col) {
-                final Move move = new Move(row, col);
-                final Button button = new Button(this.getActivity());
-                button.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
-                button.setText("");
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, 200);
-                button.setTextAppearance(this.getActivity(),R.style.gameFontButton);
+            for (int col = 0; col < 3; ++col) {//create columns
+                final Move move = new Move(row, col);//associate a location for a move for the button pressed
+                final Button button = new Button(this.getActivity());//create button for each tictactoe gameboard dynamically
+                button.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT,1));//set layout
+                button.setTextAppearance(this.getActivity(),R.style.gameFontButton);//set custom font style
                 mButtons[row][col] = button;
-                mButtons[row][col].setOnClickListener(new View.OnClickListener() {
+                mButtons[row][col].setOnClickListener(new View.OnClickListener() {//attach game logic on button click
                     @Override
                     public void onClick(View v) {
-                        button.setText(mGameEngine.getmCurrentPlayer().getSymbol());
-                        button.setTextColor(mGameEngine.getmCurrentPlayer().getColor());
-                        button.setEnabled(false);
-                        mGameEngine.makeMove(move);
+                        button.setText(mGameEngine.getmCurrentPlayer().getSymbol());//display current players move
+                        button.setTextColor(mGameEngine.getmCurrentPlayer().getColor());//display the color of current player
+                        button.setEnabled(false);//disable button
+                        mGameEngine.makeMove(move);//update move on game board
                         if(BuildConfig.DEBUG) Log.e("BOARD: ","\n"+mGameEngine.toString());
 
-                        if (mGameEngine.isOver()) {
-                            Player winner = mGameEngine.getWinner();
-                            if(winner==null){
-                                displayMessage("Game Over","It's a draw.").show();
+                        if (mGameEngine.isOver()) {//check if game's over
+                            final Player winner = mGameEngine.getWinner();// get winning player. Null if tie.
+                            String msg = "";
+                            if(winner==null){//it's a draw
+                                msg= "It's a draw.";
                             }else{
-                                displayMessage("Game Over",winner.getName()+" wins!!!").show();
+                                msg=winner.getName()+" wins!!!";
                             }
-                            mGameEngine.updateScore(winner);
-                            updateScore(mGameEngine);
-                            beginGame();
+                            displayMessage("Game Over",msg)//display winner by dialog and add a listener to button
+                                    .setCancelable(false).setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {//update and restart for a new game
+                                            mGameEngine.updateScore(winner);
+                                            updateScore(mGameEngine);
+                                            beginGame(mGameEngine.getmPlayerOne(),mGameEngine.getmPlayerTwo());
+                                        }
+                                    }).create().show();
+
+
 
                         } else {
                             updateGui(mGameEngine.getmCurrentPlayer());
@@ -184,52 +188,53 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                 });
                 tableRow.addView(button);
             }
-            tableLayout.addView(tableRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+            tableLayout.addView(tableRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT,1));
         }
         return mButtons;
     }
-    private AlertDialog displayMessage(String title, String msg){
-        return new AlertDialog.Builder(this.getActivity()).setTitle(title).setMessage(msg)
-                .setNeutralButton(android.R.string.ok, null).create();
+    private AlertDialog.Builder displayMessage(String title, String msg){
+        return new AlertDialog.Builder(this.getActivity()).setTitle(title).setMessage(msg);
     }
 
     /**
-     * Highlight player textview
+     * Highlight player textview.
+     * @see Player
+     * Activate ObjectAnimator depending on player
      * @param player
      */
     private void updateGui(Player player) {
-        mPlayerOneTV.animate().cancel();
-        mPlayerTwoTV.animate().cancel();
 
-       if(player.isPlayerOne()){
-           animate(mPlayerOneTV);
+        if(objectAnimator==null)objectAnimator=animate(mPlayerOneTV);
+        if(objectAnimator2==null)objectAnimator2= animate(mPlayerTwoTV);
+        if(player.isPlayerOne()){
+           objectAnimator.start();
+           objectAnimator2.cancel();
        }else{
-           animate(mPlayerTwoTV);
+          objectAnimator2.start();
+          objectAnimator.cancel();
        }
+
     }
-    private void animate(final TextView view){
-        view.animate().rotation(360).setInterpolator(new LinearInterpolator()).setDuration(1000).setListener(new Animator.AnimatorListener() {
 
-            @Override
-            public void onAnimationStart(Animator animation) {
 
-            }
 
-            @Override
-            public void onAnimationEnd(final android.animation.Animator animation) {
-                view.animate().setListener(this); //It listens for animation's ending and we are passing this to start onAniationEnd method when animation ends, So it works in loop
-                view.animate().rotation(360).setInterpolator(new LinearInterpolator()).setDuration(1000).setListener(this).start();
-            }
-            @Override
-            public void onAnimationCancel(Animator animation) {
+    private ObjectAnimator animate( View view){
+        int GLOW_ANIM_DURATION = 4000;
 
-            }
-            @Override
-            public void onAnimationRepeat(Animator animation) {
+             ObjectAnimator objAnim =
+                    ObjectAnimator.ofObject(view,
+                            "backgroundColor", // we want to modify the backgroundColor
+                            new ArgbEvaluator(), // this can be used to interpolate between two color values
+                            view.getContext().getResources().getColor(R.color.white), // start color defined in resources as #ff333333
+                            view.getContext().getResources().getColor(R.color.endColor) // end color defined in resources as #ff3355dd
+                    );
+            objAnim.setDuration(GLOW_ANIM_DURATION / 2);
+            objAnim.setRepeatMode(ValueAnimator.REVERSE); // start reverse animation after the "growing" phase
+            objAnim.setRepeatCount(ValueAnimator.INFINITE);
+            return objAnim;
+    }
+    private void setShadowLayer (View view ,float radius, float dx, float dy, int color){
 
-            }
-
-        });
     }
     private void updateScore(GameEngine ge){
        mWinsTV.setText(String.valueOf(ge.getmPlayerOneWins()));
