@@ -298,6 +298,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startInSinglePlayerMode(GoogleSignInAccount account) {
+        mMediaPlayer.stop();
         TicTacToeFragment frag = TicTacToeFragment.newInstance(account);
         displayFragment(R.id.main,frag,TicTacToeFragment.FRAGMENT_TAG);
     }
@@ -565,4 +566,9 @@ public class MainActivity extends AppCompatActivity
         mMediaPlayer.pause();
     }
 
+    @Override
+    public void onStop(){
+        super.onStop();
+        mMediaPlayer.stop();
+    }
 }

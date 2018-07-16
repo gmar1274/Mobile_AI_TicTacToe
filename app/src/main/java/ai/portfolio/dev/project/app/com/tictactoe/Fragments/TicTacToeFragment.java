@@ -268,4 +268,9 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         super.onPause();
         mMediaPlayer.pause();
     }
+    @Override
+    public void onStop(){
+        super.onStop();
+        mMediaPlayer.stop();
+    }
 }
