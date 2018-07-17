@@ -10,6 +10,8 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="endColor">#ff1500</color>
-    <color name="buttonBG">#6c000000</color>
+    <color name="buttonBG">#5a000000</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="neutral">#ffffff</color>
 
 </resources>

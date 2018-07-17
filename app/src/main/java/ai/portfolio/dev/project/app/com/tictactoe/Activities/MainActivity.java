@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-         mMediaPlayer = MediaPlayer.create(this,R.raw.game_home);
+        mMediaPlayer = MediaPlayer.create(this,R.raw.game_home);
+        mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -567,8 +568,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onStop(){
-        super.onStop();
+    public void onDestroy(){
+        super.onDestroy();
         mMediaPlayer.stop();
     }
 }

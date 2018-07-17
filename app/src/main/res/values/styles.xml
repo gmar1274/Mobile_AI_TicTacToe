@@ -24,4 +24,15 @@
         <item name="android:padding">20dip</item>
     </style>
 
+    <style name="CustomDialog" parent="android:Theme.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+    <style name="dialogBtn">
+        <item name="android:fontFamily">@font/game_font</item>
+        <item name="android:textColor">@color/neutral</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">20dip</item>
+    </style>
+
 </resources>

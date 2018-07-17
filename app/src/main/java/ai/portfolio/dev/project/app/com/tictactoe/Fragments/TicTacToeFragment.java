@@ -121,12 +121,19 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     private void beginGame(Player mPlayerOne,Player mPlayerTwo) {
          mGameEngine =  newGame(this.getActivity(), mPlayerOne, mPlayerTwo);
          mButtons = attachButtonListeners();
+         resetBG(mPlayerOneTV);
+         resetBG(mPlayerTwoTV);
+
          updateGui(mGameEngine.getmCurrentPlayer());
          updateScore(mGameEngine);
         if(mGameEngine.isAIMove()){
             Move move = mGameEngine.predictAIMove();
             mButtons[move.getRow()][move.getCol()].performClick();
         }
+    }
+
+    private void resetBG(View view) {
+        view.setBackgroundColor(this.getActivity().getResources().getColor(R.color.transparent));
     }
 
     @Override
@@ -139,6 +146,11 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         return mGameEngine;
     }
 
+    /**This method dynamically creates buttons for mTableLayout.
+     * Dynamically create Table Rows with Buttons that will contain game logic on click.
+     *
+     * @return dynamically create buttons with listeners to detect game moves.
+     */
     @Override
     public Button[][] attachButtonListeners() {
 
@@ -154,7 +166,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                 //button.setPadding(pad,pad,pad,pad);
                 button.setLayoutParams(params);//set layout
                 button.setTextAppearance(this.getActivity(),R.style.gameFontButton);//set custom font style
-                button.setBackgroundColor(TicTacToeFragment.this.getContext().getColor(R.color.buttonBG));
+                button.setBackgroundColor(TicTacToeFragment.this.getContext().getResources().getColor(R.color.buttonBG));
                 mButtons[row][col] = button;
                 mButtons[row][col].setOnClickListener(new View.OnClickListener() {//attach game logic on button click
                     @Override
@@ -179,17 +191,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                                 msg=winner.getName()+" wins!!!";
                             }
                             mp.start();
-                            displayMessage("Game Over",msg)//display winner by dialog and add a listener to button
-                                    .setCancelable(false).setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {//update and restart for a new game
-                                            mGameEngine.updateScore(winner);
-                                            updateScore(mGameEngine);
-                                            beginGame(mGameEngine.getmPlayerOne(),mGameEngine.getmPlayerTwo());
-                                        }
-                                    }).create().show();
-
-
+                            displayDialog("Game Over",msg,winner);//display winner by dialog and add a listener to button
 
                         } else {
                             updateGui(mGameEngine.getmCurrentPlayer());
@@ -209,8 +211,23 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         }
         return mButtons;
     }
-    private AlertDialog.Builder displayMessage(String title, String msg){
-        return new AlertDialog.Builder(this.getActivity()).setTitle(title).setMessage(msg);
+    private AlertDialog.Builder displayDialog(String title, String msg, final Player winner){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(),R.style.CustomDialog);
+        builder.setCancelable(false).setTitle(title).setMessage(msg).setNeutralButton(android.R.string.ok,null);
+        final AlertDialog alrt = builder.create();
+        alrt.show();
+        Button btn = alrt.getButton(DialogInterface.BUTTON_NEUTRAL);
+        btn.setTextAppearance(this.getContext(),R.style.dialogBtn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mGameEngine.updateScore(winner);
+                updateScore(mGameEngine);
+                beginGame(mGameEngine.getmPlayerOne(),mGameEngine.getmPlayerTwo());
+                alrt.cancel();
+            }
+        });
+         return builder;
     }
 
     /**
@@ -223,6 +240,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
         if(objectAnimator==null)objectAnimator=animate(mPlayerOneTV);
         if(objectAnimator2==null)objectAnimator2= animate(mPlayerTwoTV);
+        resetBG(mPlayerOneTV);
+        resetBG(mPlayerTwoTV);
         if(player.isPlayerOne()){
            objectAnimator.start();
            objectAnimator2.cancel();
@@ -242,7 +261,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                     ObjectAnimator.ofObject(view,
                             "backgroundColor", // we want to modify the backgroundColor
                             new ArgbEvaluator(), // this can be used to interpolate between two color values
-                            view.getContext().getResources().getColor(R.color.white), // start color defined in resources as #ff333333
+                            view.getContext().getResources().getColor(R.color.transparent), // start color defined in resources as #ff333333
                             view.getContext().getResources().getColor(R.color.endColor) // end color defined in resources as #ff3355dd
                     );
             objAnim.setDuration(GLOW_ANIM_DURATION / 2);
@@ -269,8 +288,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         mMediaPlayer.pause();
     }
     @Override
-    public void onStop(){
-        super.onStop();
+    public void onDestroy(){
+        super.onDestroy();
         mMediaPlayer.stop();
     }
 }
