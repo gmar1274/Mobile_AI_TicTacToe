@@ -1,26 +1,54 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+    <PreferenceCategory android:title="Game Options">
+
+    </PreferenceCategory>
+ <!--   <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
+        android:defaultValue="@string/pref_default_display_name"
+        android:key="@string/pref_player_name_one_key"
+        android:selectAllOnFocus="true"
+        android:textColor="@color/colorPlayerOne"
+        android:title="@string/pref_display_name_one"></ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference>
+
+    <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
+        android:defaultValue="@string/AiName"
+        android:key="@string/pref_player_name_two_key"
+        android:selectAllOnFocus="true"
+        android:textColor="@color/colorPlayerTwo"
+        android:title="@string/pref_display_name_two"></ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference>
+    -->
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_single_player_mode_key"
+        android:summary="@string/pref_description_single_mode"
+        android:title="@string/pref_title_single_mode" />
+    <ListPreference
+        android:summary="Changes the AI's intelligence."
+        android:defaultValue="Hard"
+        android:entries="@array/pref_difficulty"
+        android:entryValues="@array/pref_difficulty"
+        android:key="@string/pref_difficulty_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_difficulty" />
+
+    <PreferenceCategory android:title="Social Media">
+
+    </PreferenceCategory>
     <SwitchPreference
         android:defaultValue="true"
         android:key="example_switch"
         android:summary="@string/pref_description_social_recommendations"
         android:title="@string/pref_title_social_recommendations" />
 
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
-        android:inputType="textCapWords"
-        android:key="example_text"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/pref_title_display_name" />
-
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/pref_example_list_titles"

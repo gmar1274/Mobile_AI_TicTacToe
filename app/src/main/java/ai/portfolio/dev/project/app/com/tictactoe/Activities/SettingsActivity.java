@@ -129,6 +129,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
@@ -192,8 +193,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            try {
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_one_key)));
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_two_key)));
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_one_color_key)));
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_two_color_key)));
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_single_player_mode_key)));
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override

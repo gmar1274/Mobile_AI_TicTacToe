@@ -7,7 +7,7 @@ import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.IDifficulty;
 import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.IMinmax;
 import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.ITicTacToe;
 
-public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
+public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
     public final int GAME_NOT_OVER = 0;
     private DIFFICULTY mDifficultyLevel;
     private int BEST_SCORE = 400;//absolute value
@@ -16,32 +16,37 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
     private Player mPlayerOne, mPlayerTwo;
     private Player mCurrentPlayer;
     private int mPlayerOneWins, mPlayerTwoWins, mDraws;
-    public GameEngine(){
+
+    public GameEngine() {
         this.initGameBoard(mGameBoard);
         this.mPlayerOne = new Player();
         this.mPlayerTwo = new Player();
-        this.mDifficultyLevel = DIFFICULTY.HARD;
-        this.maxDepth = this.maxDepth(this.mDifficultyLevel);
+        this.mDifficultyLevel = DIFFICULTY.HARD;//assume hardest
     }
 
     @Override
     public void initGameBoard(int[][] board) {
         board = new int[3][3];
-        for(int i=0; i <3; ++i){
-            for (int j = 0; j<3;++j){
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
                 board[i][j] = EMPTY;
             }
         }
         this.mGameBoard = board;
     }
 
+    /**
+     *
+     * @param move
+     * @return true if move was succesfully recorded
+     */
     @Override
     public boolean makeMove(Move move) {
-        int row=move.getRow();
-        int col=move.getCol();
-        if(mGameBoard[row][col]!=EMPTY)return false;//move not made
-        mGameBoard[row][col]=mCurrentPlayer.getCode();
-        this.mCurrentPlayer = this.mCurrentPlayer.equals(mPlayerOne)?mPlayerTwo:mPlayerOne;//next player
+        int row = move.getRow();
+        int col = move.getCol();
+        if (mGameBoard[row][col] != EMPTY) return false;//move not made
+        mGameBoard[row][col] = mCurrentPlayer.getCode();
+        this.mCurrentPlayer = this.mCurrentPlayer.equals(mPlayerOne) ? mPlayerTwo : mPlayerOne;//next player
         return true;
     }
 
@@ -55,15 +60,13 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
      */
     @Override
     public Player newGame(Player playerOne, Player playerTwo) {
-        mPlayerOne=playerOne;
-        mPlayerTwo=playerTwo;
+        mPlayerOne = playerOne;
+        mPlayerTwo = playerTwo;
         initGameBoard(mGameBoard);
-       return flipCoin(playerOne,playerTwo);
+        return flipCoin(playerOne, playerTwo);
     }
 
-    private int depth;
-    private int maxDepth;
-    public final int EMPTY = Integer.MIN_VALUE, PLAYER_ONE_WIN = -400, PLAYER_TWO_WIN = 400,TIE=1;
+    public final int EMPTY = Integer.MIN_VALUE, PLAYER_ONE_WIN = -400, PLAYER_TWO_WIN = 400, TIE = 1;
 
 
     /**
@@ -75,8 +78,8 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
      * AI move using minmax with alpha beta pruning. Updates game board in GUI class. From given game state: (Maximizer on AI) - generate all possible moves (child) (branching
      * factor) - apply minmax on child node
      * - intial game state. {@value} location of move as int[]: array[0]=row, array[1]=column.
-     * @return AIMOVE - int[]location and elapsed_time in nano seconds
      *
+     * @return AIMOVE - int[]location and elapsed_time in nano seconds
      */
     public Move predictAIMove() {
         int depth = getMaxDepth(mDifficultyLevel), score, ai_row = 0, ai_col = 0;
@@ -92,17 +95,18 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
                         ai_col = col;
                         best = score;
                     }
-                    mGameBoard[row][col] =EMPTY; // undo move
+                    mGameBoard[row][col] = EMPTY; // undo move
                     if (alpha >= beta) {//prune condition stop exploring child nodes
                         //game_board[ai_row][ai_col] = COMPUTER_MOVE_SYMBOL;
-                        return new Move(ai_row,ai_col);
+                        return new Move(ai_row, ai_col);
                     }
                 }
             }
         }
         //game_board[ai_row][ai_col] = COMPUTER_MOVE_SYMBOL;
-        return new Move(ai_row,ai_col);
+        return new Move(ai_row, ai_col);
     }
+
     /**
      * Minimizer function using alpha-beta pruning
      *
@@ -124,7 +128,9 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
                         beta = best;//update beta
                     }
                     mGameBoard[row][col] = EMPTY; // undo move
-                    if (beta <= alpha) { return best; }
+                    if (beta <= alpha) {
+                        return best;
+                    }
                 }
             }
         }
@@ -152,7 +158,9 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
                         alpha = best;//update alpha
                     }
                     mGameBoard[row][col] = EMPTY; // undo move
-                    if (alpha >= beta) { return best; } //prune
+                    if (alpha >= beta) {
+                        return best;
+                    } //prune
                 }
             }
         }
@@ -231,41 +239,46 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
         }
         return score;
     }
+
     /**
      * @return gamestate
      */
     @Override
     public int check4Winner() {
-        if((mGameBoard[0][0]==mPlayerOne.getCode() && mGameBoard[0][1]==mPlayerOne.getCode() && mGameBoard[0][2]==mPlayerOne.getCode())
-                ||(mGameBoard[1][0]==mPlayerOne.getCode() &&mGameBoard[1][1]==mPlayerOne.getCode() &&mGameBoard[1][2]==mPlayerOne.getCode())
-                ||(mGameBoard[2][0]==mPlayerOne.getCode() &&mGameBoard[2][1]==mPlayerOne.getCode() &&mGameBoard[2][2]==mPlayerOne.getCode())
-                || (mGameBoard[0][0]==mPlayerOne.getCode() &&mGameBoard[1][1]==mPlayerOne.getCode() &&mGameBoard[2][2]==mPlayerOne.getCode())
-                || (mGameBoard[0][2]==mPlayerOne.getCode() &&mGameBoard[1][1]==mPlayerOne.getCode() &&mGameBoard[2][0]==mPlayerOne.getCode())
-                || (mGameBoard[0][0]==mPlayerOne.getCode() && mGameBoard[1][0]==mPlayerOne.getCode()&& mGameBoard[2][0]==mPlayerOne.getCode())
-               || (mGameBoard[0][1]==mPlayerOne.getCode() && mGameBoard[1][1]==mPlayerOne.getCode()&& mGameBoard[2][1]==mPlayerOne.getCode())
-                || (mGameBoard[0][2]==mPlayerOne.getCode() && mGameBoard[1][2]==mPlayerOne.getCode()&& mGameBoard[2][2]==mPlayerOne.getCode())
-                ){ return PLAYER_ONE_WIN;}
+        if ((mGameBoard[0][0] == mPlayerOne.getCode() && mGameBoard[0][1] == mPlayerOne.getCode() && mGameBoard[0][2] == mPlayerOne.getCode())
+                || (mGameBoard[1][0] == mPlayerOne.getCode() && mGameBoard[1][1] == mPlayerOne.getCode() && mGameBoard[1][2] == mPlayerOne.getCode())
+                || (mGameBoard[2][0] == mPlayerOne.getCode() && mGameBoard[2][1] == mPlayerOne.getCode() && mGameBoard[2][2] == mPlayerOne.getCode())
+                || (mGameBoard[0][0] == mPlayerOne.getCode() && mGameBoard[1][1] == mPlayerOne.getCode() && mGameBoard[2][2] == mPlayerOne.getCode())
+                || (mGameBoard[0][2] == mPlayerOne.getCode() && mGameBoard[1][1] == mPlayerOne.getCode() && mGameBoard[2][0] == mPlayerOne.getCode())
+                || (mGameBoard[0][0] == mPlayerOne.getCode() && mGameBoard[1][0] == mPlayerOne.getCode() && mGameBoard[2][0] == mPlayerOne.getCode())
+                || (mGameBoard[0][1] == mPlayerOne.getCode() && mGameBoard[1][1] == mPlayerOne.getCode() && mGameBoard[2][1] == mPlayerOne.getCode())
+                || (mGameBoard[0][2] == mPlayerOne.getCode() && mGameBoard[1][2] == mPlayerOne.getCode() && mGameBoard[2][2] == mPlayerOne.getCode())
+                ) {
+            return PLAYER_ONE_WIN;
+        }
 
-          if((mGameBoard[0][0]==mPlayerTwo.getCode() &&mGameBoard[0][1]==mPlayerTwo.getCode() &&mGameBoard[0][2]==mPlayerTwo.getCode())
-                ||(mGameBoard[1][0]==mPlayerTwo.getCode() &&mGameBoard[1][1]==mPlayerTwo.getCode() &&mGameBoard[1][2]==mPlayerTwo.getCode())
-                ||(mGameBoard[2][0]==mPlayerTwo.getCode() &&mGameBoard[2][1]==mPlayerTwo.getCode() &&mGameBoard[2][2]==mPlayerTwo.getCode())
-                || (mGameBoard[0][0]==mPlayerTwo.getCode() &&mGameBoard[1][1]==mPlayerTwo.getCode() &&mGameBoard[2][2]==mPlayerTwo.getCode())
-                || (mGameBoard[0][2]==mPlayerTwo.getCode() &&mGameBoard[1][1]==mPlayerTwo.getCode() &&mGameBoard[2][0]==mPlayerTwo.getCode())
-                  || (mGameBoard[0][0]==mPlayerTwo.getCode() && mGameBoard[1][0]==mPlayerTwo.getCode()&& mGameBoard[2][0]==mPlayerTwo.getCode())
-        || (mGameBoard[0][1]==mPlayerTwo.getCode() && mGameBoard[1][1]==mPlayerTwo.getCode()&& mGameBoard[2][1]==mPlayerTwo.getCode())
-        || (mGameBoard[0][2]==mPlayerTwo.getCode() && mGameBoard[1][2]==mPlayerTwo.getCode()&& mGameBoard[2][2]==mPlayerTwo.getCode())
-                ){ return PLAYER_TWO_WIN;}
+        if ((mGameBoard[0][0] == mPlayerTwo.getCode() && mGameBoard[0][1] == mPlayerTwo.getCode() && mGameBoard[0][2] == mPlayerTwo.getCode())
+                || (mGameBoard[1][0] == mPlayerTwo.getCode() && mGameBoard[1][1] == mPlayerTwo.getCode() && mGameBoard[1][2] == mPlayerTwo.getCode())
+                || (mGameBoard[2][0] == mPlayerTwo.getCode() && mGameBoard[2][1] == mPlayerTwo.getCode() && mGameBoard[2][2] == mPlayerTwo.getCode())
+                || (mGameBoard[0][0] == mPlayerTwo.getCode() && mGameBoard[1][1] == mPlayerTwo.getCode() && mGameBoard[2][2] == mPlayerTwo.getCode())
+                || (mGameBoard[0][2] == mPlayerTwo.getCode() && mGameBoard[1][1] == mPlayerTwo.getCode() && mGameBoard[2][0] == mPlayerTwo.getCode())
+                || (mGameBoard[0][0] == mPlayerTwo.getCode() && mGameBoard[1][0] == mPlayerTwo.getCode() && mGameBoard[2][0] == mPlayerTwo.getCode())
+                || (mGameBoard[0][1] == mPlayerTwo.getCode() && mGameBoard[1][1] == mPlayerTwo.getCode() && mGameBoard[2][1] == mPlayerTwo.getCode())
+                || (mGameBoard[0][2] == mPlayerTwo.getCode() && mGameBoard[1][2] == mPlayerTwo.getCode() && mGameBoard[2][2] == mPlayerTwo.getCode())
+                ) {
+            return PLAYER_TWO_WIN;
+        }
 
-            for (int i=0;i<3;++i){
-                for(int j=0;j<3;++j){
-                    if(mGameBoard[i][j]==EMPTY)return GAME_NOT_OVER;
-                }
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if (mGameBoard[i][j] == EMPTY) return GAME_NOT_OVER;
             }
+        }
         return TIE;
     }
 
     int maxDepth(DIFFICULTY diff) {
-        if(diff==null)return 9;
+        if (diff == null) return 9;
         switch (diff) {
             case EASY:
                 return 1;
@@ -279,23 +292,24 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
 
     /**
      * Print console 3x3 mGameBoard output
+     *
      * @return
      */
-    public String toString(){
-        String s="";
-        for (int i=0;i<3;++i){
-            s+="[";
-            for(int j=0;j<3;++j){
-                s += this.mGameBoard[i][j] ==EMPTY?"-":this.mGameBoard[i][j];
+    public String toString() {
+        String s = "";
+        for (int i = 0; i < 3; ++i) {
+            s += "[";
+            for (int j = 0; j < 3; ++j) {
+                s += this.mGameBoard[i][j] == EMPTY ? "-" : this.mGameBoard[i][j];
             }
-            s+="]\n";
+            s += "]\n";
         }
         return s;
     }
 
     @Override
     public void setDifficulty(DIFFICULTY diffLevel) {
-        this.mDifficultyLevel=diffLevel;
+        this.mDifficultyLevel = diffLevel;
     }
 
     @Override
@@ -303,20 +317,20 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
         this.mPlayerOne = pOne;
         this.mPlayerTwo = pTwo;
         Random rand = new Random();
-        mCurrentPlayer = rand.nextBoolean()? mPlayerOne:mPlayerTwo;
+        mCurrentPlayer = rand.nextBoolean() ? mPlayerOne : mPlayerTwo;
         return mCurrentPlayer;
     }
 
     @Override
     public boolean isOver() {
-        return check4Winner()!=GAME_NOT_OVER ;
+        return check4Winner() != GAME_NOT_OVER;
     }
 
     @Override
     public Player getWinner() {
         int winner = check4Winner();
-        if(winner==TIE)return null;
-        return winner== PLAYER_ONE_WIN ?mPlayerOne:mPlayerTwo;
+        if (winner == TIE) return null;
+        return winner == PLAYER_ONE_WIN ? mPlayerOne : mPlayerTwo;
     }
 
     public Player getmCurrentPlayer() {
@@ -336,12 +350,13 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
     }
 
     public boolean isAvailable(Move move) {
-        return mGameBoard[move.getRow()][move.getCol()]==EMPTY;
+        return mGameBoard[move.getRow()][move.getCol()] == EMPTY;
     }
 
     public boolean isAIMove() {
         return mCurrentPlayer.isAI();
     }
+
     public int getmPlayerOneWins() {
         return mPlayerOneWins;
     }
@@ -355,27 +370,55 @@ public class GameEngine implements ITicTacToe,IMinmax, IDifficulty {
     }
 
     public void setAI(Player mPlayerTwo) {
-        this.mPlayerTwo=mPlayerTwo;
+        this.mPlayerTwo = mPlayerTwo;
         this.mPlayerTwo.enableAI();
     }
 
     @Override
     public void updateScore(Player winner) {
-        if(winner==null){
+        if (winner == null) {
             mDraws += 1;
-        }else if(winner.equals(mPlayerOne)){
-            mPlayerOneWins += 1 ;
-        }else {
+        } else if (winner.equals(mPlayerOne)) {
+            mPlayerOneWins += 1;
+        } else {
             mPlayerTwoWins += 1;
         }
     }
+
+    /**
+     * AI search algorithm is based on a game tree depth search. So 9 is the bounds needed to know future move is best.
+     * Therefore, shrinking this number will effectively short side the AI move not knowing if it truly is the best move.
+     * @param diff
+     * @return
+     */
     private int getMaxDepth(DIFFICULTY diff) {
-        if(diff.equals(DIFFICULTY.EASY)){
-            return 1;
-        }else if(diff.equals(DIFFICULTY.INTERMEDIATE)){
+        if (diff.equals(DIFFICULTY.EASY)) {
             return 2;
-        }else{
+        } else if (diff.equals(DIFFICULTY.INTERMEDIATE)) {
+            return 4;
+        } else {
             return 9;
         }
     }
+
+    /**
+     * Sets difficulty level based on input string
+     * @param ai_difficulty
+     * @return
+     */
+    public DIFFICULTY getDifficultyFromString(String ai_difficulty) {
+       if(ai_difficulty==null)return null;
+        if (ai_difficulty.toLowerCase().contains(DIFFICULTY.EASY.toString().toLowerCase())) {
+            return DIFFICULTY.EASY;
+        } else if (ai_difficulty.toLowerCase().contains(DIFFICULTY.INTERMEDIATE.toString().toLowerCase())) {
+            return DIFFICULTY.INTERMEDIATE;
+        } else if (ai_difficulty.toLowerCase().contains(DIFFICULTY.HARD.toString().toLowerCase())) {
+            return DIFFICULTY.HARD;
+        }
+        return null;
+    }
+/*
+Determines if single player mode.
+ */
+    public boolean isAIEnabled() { return mPlayerOne.isAI() || mPlayerTwo.isAI(); }
 }

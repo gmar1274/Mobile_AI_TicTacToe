@@ -62,4 +62,8 @@ public class Player {
 
     public boolean isPlayerOne() {return this.getCode()==1;
     }
+
+    public void setSinglePlayerMode(boolean isAiEnabled) {
+        this.isAI = isAiEnabled;
+    }
 }

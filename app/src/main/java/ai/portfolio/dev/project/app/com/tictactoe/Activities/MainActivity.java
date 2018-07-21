@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -20,8 +19,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -48,7 +51,6 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
-import ai.portfolio.dev.project.app.com.tictactoe.Custom.CustomFlipAnimation;
 import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToeFragment;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
@@ -83,19 +85,11 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState != null) {
 
         } else {
-            final ConstraintLayout lay = (ConstraintLayout) this.findViewById(R.id.button_layout_constraint);
             Button game = (Button) this.findViewById(R.id.btn_ai);
-
-            CustomFlipAnimation flip = new CustomFlipAnimation(game, game, 1000);
-            if (game.getVisibility() == View.GONE) {
-                flip.reverse();
-            } else {
-                game.startAnimation(flip);
-            }
+            game.setAnimation(bounceAnimation(8000));
             game.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    lay.setVisibility(View.GONE);
                     startInSinglePlayerMode(null);
                 }
             });
@@ -111,14 +105,21 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
+            animateBackground();
+
         }
     }
 
+    private void animateBackground() {
+        final SurfaceView surfaceView = (SurfaceView)this.findViewById(R.id.surfaceView);
+
+
+    }
     private void startSignInIntent() {
         // Configure sign-in to request the user's ID, email address, and basic
 // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions
-                .Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestScopes(Games.SCOPE_GAMES_LITE)
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
@@ -164,14 +165,20 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
+        final TicTacToeFragment fragment = (TicTacToeFragment) getSupportFragmentManager().findFragmentByTag(TicTacToeFragment.FRAGMENT_TAG);
+        if (fragment != null) { // and then you define a method allowBackPressed with the logic to allow back pressed or not
+            fragment.backButtonPressed();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        //getMenuInflater().inflate(R.menu.main, menu);
+        //return true;
+        return false;
     }
 
     @Override
@@ -217,17 +224,25 @@ public class MainActivity extends AppCompatActivity
         this.startActivity(new Intent(this, SettingsActivity.class));
     }
 
+    /**
+     * Uodate main content.xml to game fragment
+     * @param containerViewId
+     * @param fragment
+     * @param fragmentTag
+     */
     protected void displayFragment(@IdRes int containerViewId,
                                @NonNull Fragment fragment,
                                @NonNull String fragmentTag) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(containerViewId, fragment, fragmentTag)
-                .disallowAddToBackStack()
-                .commit();
+        android.support.v4.app.FragmentManager fragMgr = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction xact = fragMgr.beginTransaction();
+        if (null == fragMgr.findFragmentByTag(fragmentTag)) {
+            xact.add (containerViewId,fragment,fragmentTag)
+                    .commit();
+        }
+       cleanUpHomeScreen();//cleans anything having to do with main activity home screen
     }
 
-    protected void replaceFragment(@IdRes int containerViewId,
+   /* protected void replaceFragment(@IdRes int containerViewId,
                                    @NonNull Fragment fragment,
                                    @NonNull String fragmentTag,
                                    @Nullable String backStackStateName) {
@@ -236,7 +251,7 @@ public class MainActivity extends AppCompatActivity
                 .replace(containerViewId, fragment, fragmentTag)
                 .addToBackStack(backStackStateName)
                 .commit();
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -564,12 +579,27 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPause(){
         super.onPause();
-        mMediaPlayer.pause();
+        if(mMediaPlayer!=null)mMediaPlayer.pause();//can be null when user navigates to other fragments.
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mMediaPlayer.stop();
+        cleanUpHomeScreen();
+    }
+
+    private void cleanUpHomeScreen() {
+        if(mMediaPlayer!=null) mMediaPlayer.release();
+        mMediaPlayer=null;
+    }
+
+    private Animation bounceAnimation(long duration){
+        TranslateAnimation animation = new TranslateAnimation(0,0,30,0);
+        //animation.setStartOffset(offsetTime);
+        animation.setInterpolator(new BounceInterpolator());
+        animation.setDuration(duration);
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.start();
+        return animation;
     }
 }

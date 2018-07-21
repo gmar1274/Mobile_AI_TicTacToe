@@ -9,4 +9,5 @@ import ai.portfolio.dev.project.app.com.tictactoe.Objects.Player;
 public interface ITicTacToeFragment {
 GameEngine newGame(Context context, Player pOne, Player pTwo);
 Button[][] attachButtonListeners();
+void backButtonPressed();
 }

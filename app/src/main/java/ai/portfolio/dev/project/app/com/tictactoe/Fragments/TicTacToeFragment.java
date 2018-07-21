@@ -5,8 +5,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import ai.portfolio.dev.project.app.com.tictactoe.Activities.MainActivity;
 import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
 import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.ITicTacToeFragment;
 import ai.portfolio.dev.project.app.com.tictactoe.Objects.GameEngine;
@@ -51,6 +55,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     private ObjectAnimator objectAnimator;
     private ObjectAnimator objectAnimator2;
     private MediaPlayer mMediaPlayer;
+    private String ai_difficulty;
 
 
     public TicTacToeFragment() {
@@ -81,12 +86,19 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mMediaPlayer = MediaPlayer.create(this.getActivity(),R.raw.game_play);
+
+        mMediaPlayer = MediaPlayer.create(this.getActivity(),R.raw.game_play);// begin game play music
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
-        String p_one_name = "PLAYER ONE";
-        String p_two_name = "ROVER";
-        if(BuildConfig.DEBUG)p_one_name="Gabriel";
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());//get persistent preferences from FragmentPreferences
+
+        String p_one_name =  spref.getString(getString(R.string.pref_player_name_one_key),getString(R.string.pref_default_display_name));//get saved name otherwise default
+        String p_two_name = spref.getString(getString(R.string.pref_player_name_two_key),getString(R.string.AiName));//get saved named otherwise default
+
+         ai_difficulty = spref.getString(getString(R.string.pref_difficulty_key),null);
+
+        boolean isAiEnabled = spref.getBoolean(getString(R.string.pref_single_player_mode_key),true);//AI is enabled by default otherwise users option
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this.getActivity());
         if(account!=null) {
             p_one_name = account.getGivenName()+" "+account.getFamilyName();
@@ -102,8 +114,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
         Player mPlayerOne = new Player(p_one_name,"X");
         mPlayerOne.setColor(getActivity().getResources().getColor(R.color.colorPlayerOne));
-        Player  mPlayerTwo = new Player("Rover","O");
-        mPlayerTwo.enableAI();
+        Player  mPlayerTwo = new Player(p_two_name,"O");
+        mPlayerTwo.setSinglePlayerMode(isAiEnabled);//true if AI is enabled
         mPlayerTwo.setColor(this.getActivity().getResources().getColor(R.color.colorPlayerTwo));
 
         mPlayerOneTV = (TextView) view.findViewById(R.id.player_one_tv);
@@ -120,10 +132,10 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
     private void beginGame(Player mPlayerOne,Player mPlayerTwo) {
          mGameEngine =  newGame(this.getActivity(), mPlayerOne, mPlayerTwo);
+         if(mGameEngine.isAIEnabled()){mGameEngine.getDifficultyFromString(ai_difficulty);}
          mButtons = attachButtonListeners();
          resetBG(mPlayerOneTV);
          resetBG(mPlayerTwoTV);
-
          updateGui(mGameEngine.getmCurrentPlayer());
          updateScore(mGameEngine);
         if(mGameEngine.isAIMove()){
@@ -131,6 +143,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
             mButtons[move.getRow()][move.getCol()].performClick();
         }
     }
+
 
     private void resetBG(View view) {
         view.setBackgroundColor(this.getActivity().getResources().getColor(R.color.transparent));
@@ -171,8 +184,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                 mButtons[row][col].setOnClickListener(new View.OnClickListener() {//attach game logic on button click
                     @Override
                     public void onClick(View v) {
-                        MediaPlayer mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.coin);
-                        mp.start();
+                        playSoundMove();
                         button.setText(mGameEngine.getmCurrentPlayer().getSymbol());//display current players move
                         button.setTextColor(mGameEngine.getmCurrentPlayer().getColor());//display the color of current player
                         button.setEnabled(false);//disable button
@@ -180,24 +192,12 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
                         if(BuildConfig.DEBUG) Log.e("BOARD: ","\n"+mGameEngine.toString());
 
                         if (mGameEngine.isOver()) {//check if game's over
-                            final Player winner = mGameEngine.getWinner();// get winning player. Null if tie.
-                            String msg = "";
-                            if(winner==null){//it's a draw
-                                msg= "It's a draw.";
-                                mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.loss);
-                            }else{
-                                if(winner.equals(mGameEngine.getmPlayerOne()))mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.won);
-                                else mp = MediaPlayer.create(TicTacToeFragment.this.getActivity(), R.raw.loss);
-                                msg=winner.getName()+" wins!!!";
-                            }
-                            mp.start();
-                            displayDialog("Game Over",msg,winner);//display winner by dialog and add a listener to button
-
+                                gameOver();
                         } else {
                             updateGui(mGameEngine.getmCurrentPlayer());
                             if(mGameEngine.isAIMove()){
                                 Move move = mGameEngine.predictAIMove();
-                               if(BuildConfig.DEBUG) Log.e("Predicted Move:: ",move.toString()+" :: "+mGameEngine);
+                               //if(BuildConfig.DEBUG) Log.e("Predicted Move:: ",move.toString()+" :: "+mGameEngine);
                                 mButtons[move.getRow()][move.getCol()].performClick();
                             }
                         }
@@ -211,6 +211,72 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         }
         return mButtons;
     }
+
+
+
+    private void gameOver() {
+        final Player winner = mGameEngine.getWinner();// get winning player. Null if tie.
+        String msg = "";
+        if(winner==null){//it's a draw
+            msg= "It's a draw.";
+            playSoundLoss();
+        }else{
+            if(winner.equals(mGameEngine.getmPlayerOne())){
+                msg=winner.getName()+" wins!!!";
+                playSoundWin();
+            }else {
+                playSoundLoss();
+            }
+        }
+        displayDialog("Game Over",msg,winner);//display winner by dialog and add a listener to button
+    }
+    /**
+     *Prepare, play, release, nullify upon usage.
+     */
+    private void playSoundMove() {
+        MediaPlayer mMediaPlayerMove = MediaPlayer.create(this.getActivity(), R.raw.move);
+        mMediaPlayerMove.start();
+        mMediaPlayerMove.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
+    }
+    /**
+     * Prepare, start, release, nullify ,repeat
+     */
+    private void playSoundWin() {
+        MediaPlayer mMediaPlayerGameOverWin = MediaPlayer.create(this.getActivity(), R.raw.win);
+        mMediaPlayerGameOverWin.start();
+        mMediaPlayerGameOverWin.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
+    }
+    /**
+     * Prepare, start, release, nullify ,repeat
+     */
+    private void playSoundLoss() {
+        MediaPlayer mMediaPlayerGameOverLoss = MediaPlayer.create(this.getActivity(), R.raw.loss);
+        mMediaPlayerGameOverLoss.start();
+        mMediaPlayerGameOverLoss.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
+    }
+
+    @Override
+    public void backButtonPressed() {
+        this.getActivity().getSupportFragmentManager().beginTransaction().remove(this);
+        Intent i = new Intent(this.getContext(),MainActivity.class);
+        startActivity(i);
+    }
+
     private AlertDialog.Builder displayDialog(String title, String msg, final Player winner){
         AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity(),R.style.CustomDialog);
         builder.setCancelable(false).setTitle(title).setMessage(msg).setNeutralButton(android.R.string.ok,null);
@@ -290,6 +356,19 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mMediaPlayer.stop();
+
     }
+    private void cleanUp(){
+        mMediaPlayer.release();
+        mMediaPlayer=null;
+        
+       /* mMediaPlayerGameOverLoss.release();
+        mMediaPlayerGameOverWin.release();
+        mMediaPlayerMove.release();
+       
+        mMediaPlayerGameOverWin=null;
+        mMediaPlayerGameOverLoss=null;
+        mMediaPlayerMove=null;*/
+    }
+
 }
