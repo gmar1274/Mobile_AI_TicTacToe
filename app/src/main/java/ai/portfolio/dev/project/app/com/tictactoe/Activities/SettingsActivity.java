@@ -199,6 +199,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_one_color_key)));
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_two_color_key)));
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_single_player_mode_key)));
+                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_difficulty_key)));
 
             }catch (Exception e){
                 e.printStackTrace();

@@ -132,7 +132,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
     private void beginGame(Player mPlayerOne,Player mPlayerTwo) {
          mGameEngine =  newGame(this.getActivity(), mPlayerOne, mPlayerTwo);
-         if(mGameEngine.isAIEnabled()){mGameEngine.getDifficultyFromString(ai_difficulty);}
+         if(mGameEngine.isAIEnabled()){mGameEngine.setDifficulty(ai_difficulty);}
          mButtons = attachButtonListeners();
          resetBG(mPlayerOneTV);
          resetBG(mPlayerTwoTV);

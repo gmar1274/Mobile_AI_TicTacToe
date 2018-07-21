@@ -28,7 +28,7 @@ public interface IMinmax {
     /**
      * @return terminal state
      */
-    int evaluate();
+    int evaluate(IDifficulty.DIFFICULTY difficulty);
     /**
      * @return gamestate
      */

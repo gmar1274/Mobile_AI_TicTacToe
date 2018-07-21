@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         //signInSilently();
-        mMediaPlayer.start();
+        if(mMediaPlayer!=null)mMediaPlayer.start();
     }
 
 

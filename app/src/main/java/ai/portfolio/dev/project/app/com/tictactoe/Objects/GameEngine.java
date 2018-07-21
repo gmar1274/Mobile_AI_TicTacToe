@@ -117,7 +117,7 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
         int score;
         int utility_value = check4Winner();
         if (utility_value != GAME_NOT_OVER) return utility_value;
-        if (depth == 0) return evaluate();//heuristic value
+        if (depth == 0) return evaluate(mDifficultyLevel);//heuristic value
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 if (mGameBoard[row][col] == EMPTY) {
@@ -147,7 +147,7 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
         int score;
         int utility_value = check4Winner();
         if (utility_value != GAME_NOT_OVER) return utility_value;
-        if (depth == 0) return this.evaluate();//heuristic value
+        if (depth == 0) return this.evaluate(mDifficultyLevel);//heuristic value
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
                 if (mGameBoard[row][col] == EMPTY) {//if empty space
@@ -172,7 +172,11 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
      *
      * @Return +200, +20, +2 for EACH 3-, 2-, 1-in-a-line for computer. -200, -20, -2 for EACH 3-, 2-, 1-in-a-line for opponent. 1 otherwise
      */
-    public int evaluate() {
+    @Override
+    public int evaluate(DIFFICULTY difficulty) {
+        boolean easy=false,intermediate=false;
+        if(difficulty.equals(DIFFICULTY.EASY))easy=true;
+        if(difficulty.equals(DIFFICULTY.INTERMEDIATE))intermediate=true;
         int score = 0;
         // Evaluate score for each of the 8 lines (3 rows, 3 columns, 2 diagonals)
         score += evaluateLine(0, 0, 0, 1, 0, 2); // row 0
@@ -183,6 +187,8 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
         score += evaluateLine(0, 2, 1, 2, 2, 2); // col 2
         score += evaluateLine(0, 0, 1, 1, 2, 2); // diagonal
         score += evaluateLine(0, 2, 1, 1, 2, 0); // alternate diagonal
+        if(easy)return -score;
+        if(intermediate)return score/2;
         return score;
     }
 
@@ -393,9 +399,9 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
      */
     private int getMaxDepth(DIFFICULTY diff) {
         if (diff.equals(DIFFICULTY.EASY)) {
-            return 2;
+            return 1;
         } else if (diff.equals(DIFFICULTY.INTERMEDIATE)) {
-            return 4;
+            return 1;
         } else {
             return 9;
         }
@@ -406,19 +412,23 @@ public class GameEngine implements ITicTacToe, IMinmax, IDifficulty {
      * @param ai_difficulty
      * @return
      */
-    public DIFFICULTY getDifficultyFromString(String ai_difficulty) {
-       if(ai_difficulty==null)return null;
-        if (ai_difficulty.toLowerCase().contains(DIFFICULTY.EASY.toString().toLowerCase())) {
-            return DIFFICULTY.EASY;
-        } else if (ai_difficulty.toLowerCase().contains(DIFFICULTY.INTERMEDIATE.toString().toLowerCase())) {
-            return DIFFICULTY.INTERMEDIATE;
-        } else if (ai_difficulty.toLowerCase().contains(DIFFICULTY.HARD.toString().toLowerCase())) {
-            return DIFFICULTY.HARD;
-        }
-        return null;
+    public DIFFICULTY parseDifficultyFromString(String ai_difficulty) {
+       switch (ai_difficulty.toLowerCase()){
+           case "easy":
+               return DIFFICULTY.EASY;
+           case "intermediate":
+               return  DIFFICULTY.INTERMEDIATE;
+           case "hard":
+               return DIFFICULTY.HARD;
+       }
+       return null;
     }
 /*
 Determines if single player mode.
  */
     public boolean isAIEnabled() { return mPlayerOne.isAI() || mPlayerTwo.isAI(); }
+
+    public void setDifficulty(String ai_difficulty) {
+        setDifficulty( parseDifficultyFromString(ai_difficulty) );
+    }
 }

@@ -31,7 +31,6 @@
         android:summary="@string/pref_description_single_mode"
         android:title="@string/pref_title_single_mode" />
     <ListPreference
-        android:summary="Changes the AI's intelligence."
         android:defaultValue="Hard"
         android:entries="@array/pref_difficulty"
         android:entryValues="@array/pref_difficulty"
