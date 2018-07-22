@@ -2,6 +2,7 @@ package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private static final int RC_SIGN_IN = 1;
-    private static final String TAG = "DEBUGGGGGGGGG";
+    private static final String TAG = "DEBUG_TAG";
     private static final long ANY_ROLE = 0;
     private RoomConfig mJoinedRoomConfig;
     private MediaPlayer mMediaPlayer;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mMediaPlayer = MediaPlayer.create(this,R.raw.game_home);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
@@ -163,12 +165,25 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
-        }
 
-        final TicTacToeFragment fragment = (TicTacToeFragment) getSupportFragmentManager().findFragmentByTag(TicTacToeFragment.FRAGMENT_TAG);
-        if (fragment != null) { // and then you define a method allowBackPressed with the logic to allow back pressed or not
-            fragment.backButtonPressed();
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(TicTacToeFragment.FRAGMENT_TAG);
+            if (fragment != null) { // and then you define a method allowBackPressed with the logic to allow back pressed or not
+                ((TicTacToeFragment) fragment).backButtonPressed();//remove fragment
+                resetAudio();
+            }else{
+                super.onBackPressed();
+            }
+        }
+    }
+
+    private void resetAudio() {
+        Log.e("AUDIO","media player: "+mMediaPlayer);
+        if(this.mMediaPlayer!=null){
+            this.mMediaPlayer.start();
+        }else {
+            this.mMediaPlayer = MediaPlayer.create(this, R.raw.game_home);
+            this.mMediaPlayer.setLooping(true);
+            this.mMediaPlayer.start();
         }
     }
 
@@ -210,7 +225,11 @@ public class MainActivity extends AppCompatActivity
                 signOut();
                 break;
             case R.id.nav_settings:
+                if(isInGamePlay()){
+                    displayExitGameDialog().show();
+                }else{
                 openSettingsActivity();
+                }
                 break;
 
         }
@@ -218,6 +237,30 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private AlertDialog displayExitGameDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.dialog_title_gameplay_ext)).setMessage(getString(R.string.dialog_message_settings_exit)).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openSettingsActivity();
+            }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        AlertDialog alertDialog= builder.create();
+        return alertDialog;
+    }
+
+    /**
+     * Will check if game is already started.
+     * @return
+     */
+    private boolean isInGamePlay() {
+       return getSupportFragmentManager().findFragmentByTag(TicTacToeFragment.FRAGMENT_TAG)!=null;//fragment is started and running
     }
 
     private void openSettingsActivity() {
@@ -239,23 +282,27 @@ public class MainActivity extends AppCompatActivity
             xact.add (containerViewId,fragment,fragmentTag)
                     .commit();
         }
-       cleanUpHomeScreen();//cleans anything having to do with main activity home screen
+       cleanUpHomeScreen();//cleans anything having to do with main activity home screen, ie, audio
     }
 
-   /* protected void replaceFragment(@IdRes int containerViewId,
-                                   @NonNull Fragment fragment,
-                                   @NonNull String fragmentTag,
-                                   @Nullable String backStackStateName) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(containerViewId, fragment, fragmentTag)
-                .addToBackStack(backStackStateName)
-                .commit();
-    }*/
+    /**
+     * @param containerViewId
+     * @param fragmentTag
+     */
+    protected void replaceFragment(@IdRes int containerViewId,
+                                   @NonNull String fragmentTag) {
+        Fragment frag = getSupportFragmentManager().findFragmentByTag(TicTacToeFragment.FRAGMENT_TAG);
+        if(frag!=null) {
+            getSupportFragmentManager()
+                    .beginTransaction().replace(containerViewId, frag).commit();
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
@@ -314,7 +361,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startInSinglePlayerMode(GoogleSignInAccount account) {
-        mMediaPlayer.stop();
+        cleanUpHomeScreen();
         TicTacToeFragment frag = TicTacToeFragment.newInstance(account);
         displayFragment(R.id.main,frag,TicTacToeFragment.FRAGMENT_TAG);
     }

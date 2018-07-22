@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
-import ai.portfolio.dev.project.app.com.tictactoe.Activities.MainActivity;
 import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
 import ai.portfolio.dev.project.app.com.tictactoe.Interfaces.ITicTacToeFragment;
 import ai.portfolio.dev.project.app.com.tictactoe.Objects.GameEngine;
@@ -272,9 +270,10 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
 
     @Override
     public void backButtonPressed() {
-        this.getActivity().getSupportFragmentManager().beginTransaction().remove(this);
-        Intent i = new Intent(this.getContext(),MainActivity.class);
-        startActivity(i);
+        Fragment fragment = this.getActivity().getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        this.getActivity().getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+        //Intent i = new Intent(this.getContext(),MainActivity.class);
+        //startActivity(i);
     }
 
     private AlertDialog.Builder displayDialog(String title, String msg, final Player winner){

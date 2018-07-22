@@ -114,4 +114,6 @@
     </string-array>
     <string name="pref_difficulty_key">pref_difficulty_key</string>
     <string name="pref_title_difficulty">AI Difficulty</string>
+    <string name="dialog_title_gameplay_ext">Exit Game</string>
+    <string name="dialog_message_settings_exit">Do you really want to leave?</string>
 </resources>
