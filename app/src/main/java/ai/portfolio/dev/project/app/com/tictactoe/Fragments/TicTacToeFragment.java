@@ -219,8 +219,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
             msg= "It's a draw.";
             playSoundLoss();
         }else{
+            msg=winner.getName()+" wins!!!";
             if(winner.equals(mGameEngine.getmPlayerOne())){
-                msg=winner.getName()+" wins!!!";
                 playSoundWin();
             }else {
                 playSoundLoss();

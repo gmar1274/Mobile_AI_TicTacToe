@@ -116,4 +116,7 @@
     <string name="pref_title_difficulty">AI Difficulty</string>
     <string name="dialog_title_gameplay_ext">Exit Game</string>
     <string name="dialog_message_settings_exit">Do you really want to leave?</string>
+    <string name="ad_mob_video_home_screen">ca-app-pub-9309556355508377/1777094640</string>
+    <string name="ad_mob_video_multiplayer">ca-app-pub-9309556355508377/8626424082</string>
+    <string name="video_test_ad_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

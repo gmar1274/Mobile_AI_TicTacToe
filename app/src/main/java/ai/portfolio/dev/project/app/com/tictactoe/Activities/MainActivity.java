@@ -29,6 +29,9 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -52,6 +55,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
+import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
 import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToeFragment;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
@@ -64,11 +68,13 @@ public class MainActivity extends AppCompatActivity
     private static final long ANY_ROLE = 0;
     private RoomConfig mJoinedRoomConfig;
     private MediaPlayer mMediaPlayer;
+    private InterstitialAd mInterstitialAd, mInterstitialAdMultiplayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadADs();
 
         mMediaPlayer = MediaPlayer.create(this,R.raw.game_home);
         mMediaPlayer.setLooping(true);
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity
             game.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startInSinglePlayerMode(null);
+                   mInterstitialAd.show();
                 }
             });
 
@@ -100,16 +106,53 @@ public class MainActivity extends AppCompatActivity
             online.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //Display search for game
-                    //signInSilently(); this gets called immediately even without being clicked
-                    //startSignInIntent();
-                    startQuickGame(ANY_ROLE);
+                    mInterstitialAdMultiplayer.show();
                 }
             });
 
             animateBackground();
 
         }
+    }
+
+    /**
+     * Adds AD listener for adMob game play ads for homescreen.
+     */
+    private void loadADs() {
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAdMultiplayer=new InterstitialAd(this);
+
+        if(BuildConfig.DEBUG){
+            mInterstitialAd.setAdUnitId(getString(R.string.video_test_ad_id));
+            mInterstitialAdMultiplayer.setAdUnitId(getString(R.string.video_test_ad_id));
+        }else{
+            mInterstitialAd.setAdUnitId(getString(R.string.ad_mob_video_home_screen));
+            mInterstitialAdMultiplayer.setAdUnitId(getString(R.string.ad_mob_video_multiplayer));
+        }
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAdMultiplayer.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                startInSinglePlayerMode(null);
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });
+        mInterstitialAdMultiplayer.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                try {
+                    startQuickGame(ANY_ROLE);
+                }catch (Exception e){
+                    Toast.makeText(MainActivity.this,"Feature coming soon!",Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
     }
 
     private void animateBackground() {
