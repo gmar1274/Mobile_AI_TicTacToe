@@ -93,7 +93,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         String p_one_name =  spref.getString(getString(R.string.pref_player_name_one_key),getString(R.string.pref_default_display_name));//get saved name otherwise default
         String p_two_name = spref.getString(getString(R.string.pref_player_name_two_key),getString(R.string.AiName));//get saved named otherwise default
 
-         ai_difficulty = spref.getString(getString(R.string.pref_difficulty_key),null);
+         ai_difficulty = spref.getString(getString(R.string.pref_difficulty_key),getString(R.string.default_difficulty));
 
         boolean isAiEnabled = spref.getBoolean(getString(R.string.pref_single_player_mode_key),true);//AI is enabled by default otherwise users option
 

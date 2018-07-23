@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "389329484198-ccort7dpol4n2ju7d6ikn548ovr3dchd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.portfolio.dev.project.app.com.tictactoe",
+            "certificate_hash": "6cbbb88fdd6007941c050e0aa570db42f8475528"
+          }
+        },
+        {
           "client_id": "389329484198-b4pq62l3qgiqilruvujg21m6979ia6qt.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 android {
     buildTypes {
         customDebugType {
-            debuggable true
+            debuggable false
         }
     }
 }
