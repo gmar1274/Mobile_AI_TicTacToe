@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <EditText
-        android:id="@android:id/title"
+        android:id="@+id/pref_text"
         style="@android:style/TextAppearance.DeviceDefault.SearchResult.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

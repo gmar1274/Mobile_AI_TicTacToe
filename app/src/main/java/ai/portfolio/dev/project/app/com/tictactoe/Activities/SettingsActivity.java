@@ -16,7 +16,6 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -157,10 +156,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent intent = NavUtils.getParentActivityIntent(this);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //Intent intent = NavUtils.getParentActivityIntent(this);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //startActivityForResult(intent,SETTINGS_ACTIVITY);
-        NavUtils.navigateUpTo(this, intent);
+        //NavUtils.navigateUpTo(this, intent);
+        startActivity(new Intent(this,MainActivity.class));
+        finish();
     }
 
     @Override
@@ -213,10 +214,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             try {
-                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_one_key)));
-                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_two_key)));
-                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_one_color_key)));
-                bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_two_color_key)));
+                //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_one_key)));
+                //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_name_two_key)));
+                //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_one_color_key)));
+                //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_player_two_color_key)));
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_single_player_mode_key)));
                 bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_difficulty_key)));
 

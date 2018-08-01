@@ -5,22 +5,8 @@
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
 
     <PreferenceCategory android:title="Game Options">
-
     </PreferenceCategory>
- <!--   <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
-        android:defaultValue="@string/pref_default_display_name"
-        android:key="@string/pref_player_name_one_key"
-        android:selectAllOnFocus="true"
-        android:textColor="@color/colorPlayerOne"
-        android:title="@string/pref_display_name_one"></ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference>
 
-    <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
-        android:defaultValue="@string/AiName"
-        android:key="@string/pref_player_name_two_key"
-        android:selectAllOnFocus="true"
-        android:textColor="@color/colorPlayerTwo"
-        android:title="@string/pref_display_name_two"></ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference>
-    -->
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
@@ -39,6 +25,13 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_difficulty" />
+
+   <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
+       android:key="@string/pref_player_name_one_key"
+       />
+    <ai.portfolio.dev.project.app.com.tictactoe.Objects.TextColorChooserPreference
+        android:key="@string/pref_player_name_two_key"
+        />
 
     <PreferenceCategory android:title="Social Media">
 

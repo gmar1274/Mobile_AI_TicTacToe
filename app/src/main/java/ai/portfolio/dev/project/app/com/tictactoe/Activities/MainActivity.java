@@ -4,13 +4,18 @@ package ai.portfolio.dev.project.app.com.tictactoe.Activities;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +32,8 @@ import android.view.animation.Animation;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -57,6 +64,7 @@ import java.util.List;
 
 import ai.portfolio.dev.project.app.com.tictactoe.BuildConfig;
 import ai.portfolio.dev.project.app.com.tictactoe.Fragments.TicTacToeFragment;
+import ai.portfolio.dev.project.app.com.tictactoe.Loaders.ImageLoader;
 import ai.portfolio.dev.project.app.com.tictactoe.R;
 
 public class MainActivity extends AppCompatActivity
@@ -66,9 +74,11 @@ public class MainActivity extends AppCompatActivity
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "DEBUG_TAG";
     private static final long ANY_ROLE = 0;
+    private static final int GOOGLE_SINGLE_SIGN_IN = 2;
     private RoomConfig mJoinedRoomConfig;
     private MediaPlayer mMediaPlayer;
     private InterstitialAd mInterstitialAd, mInterstitialAdMultiplayer;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         if (savedInstanceState != null) {
@@ -113,6 +123,8 @@ public class MainActivity extends AppCompatActivity
             animateBackground();
 
         }
+
+        updateColorNavigationView();
     }
 
     /**
@@ -134,7 +146,7 @@ public class MainActivity extends AppCompatActivity
         mInterstitialAd.setAdListener(new AdListener(){
             @Override
             public void onAdClosed() {
-                startInSinglePlayerMode(null);
+                startSignInIntent();
                 // Load the next interstitial.
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
@@ -165,13 +177,12 @@ public class MainActivity extends AppCompatActivity
 // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).requestScopes(Games.SCOPE_GAMES_LITE)
-                .requestEmail()
+                .requestEmail().requestProfile()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
         Intent intent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(intent, RC_SIGN_IN);
+        startActivityForResult(intent, GOOGLE_SINGLE_SIGN_IN);
     }
 
  /*   private void signInSilently() {
@@ -220,7 +231,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void resetAudio() {
-        Log.e("AUDIO","media player: "+mMediaPlayer);
+        //Log.e("AUDIO","media player: "+mMediaPlayer);
         if(this.mMediaPlayer!=null){
             this.mMediaPlayer.start();
         }else {
@@ -344,50 +355,61 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        switch (requestCode){
+            case GOOGLE_SINGLE_SIGN_IN:
+                if (result.isSuccess()) {
+                    // The signed in account is stored in the result.
+                    GoogleSignInAccount signedInAccount = result.getSignInAccount();
+                    beginGame(signedInAccount);
+                } else {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    handleSignInResult(task);
 
+                }
+                break;
+            case RC_SIGN_IN:
+                if (result.isSuccess()) {
+                    // The signed in account is stored in the result.
+                    GoogleSignInAccount signedInAccount = result.getSignInAccount();
+                    startQuickGame(ANY_ROLE);
+                } else {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    handleSignInResult(task);
 
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                // The signed in account is stored in the result.
-                GoogleSignInAccount signedInAccount = result.getSignInAccount();
-                //startInSinglePlayerMode(signedInAccount);
-                startQuickGame(ANY_ROLE);
-            } else {
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                handleSignInResult(task);
+                }
+                break;
+            case RC_WAITING_ROOM:
+                // Look for finishing the waiting room from code, for example if a
+                // "start game" message is received.  In this case, ignore the result.
+                if (mWaitingRoomFinishedFromCode) {
+                    return;
+                }
 
-            }
-        } else if (requestCode == RC_WAITING_ROOM) {
+                if (resultCode == Activity.RESULT_OK) {
+                    // Start the game!
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    // Waiting room was dismissed with the back button. The meaning of this
+                    // action is up to the game. You may choose to leave the room and cancel the
+                    // match, or do something else like minimize the waiting room and
+                    // continue to connect in the background.
 
-            // Look for finishing the waiting room from code, for example if a
-            // "start game" message is received.  In this case, ignore the result.
-            if (mWaitingRoomFinishedFromCode) {
-                return;
-            }
-
-            if (resultCode == Activity.RESULT_OK) {
-                // Start the game!
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-                // Waiting room was dismissed with the back button. The meaning of this
-                // action is up to the game. You may choose to leave the room and cancel the
-                // match, or do something else like minimize the waiting room and
-                // continue to connect in the background.
-
-                // in this example, we take the simple approach and just leave the room:
-                Games.getRealTimeMultiplayerClient(thisActivity,
-                        GoogleSignIn.getLastSignedInAccount(this))
-                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
-                // player wants to leave the room.
-                Games.getRealTimeMultiplayerClient(thisActivity,
-                        GoogleSignIn.getLastSignedInAccount(this))
-                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }
+                    // in this example, we take the simple approach and just leave the room:
+                    Games.getRealTimeMultiplayerClient(thisActivity,
+                            GoogleSignIn.getLastSignedInAccount(this))
+                            .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
+                    // player wants to leave the room.
+                    Games.getRealTimeMultiplayerClient(thisActivity,
+                            GoogleSignIn.getLastSignedInAccount(this))
+                            .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                break;
+                default:
+                    break;
         }
-
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -403,10 +425,41 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void startInSinglePlayerMode(GoogleSignInAccount account) {
-        cleanUpHomeScreen();
+    private void updateColorNavigationView(){
+        View view = navigationView.getHeaderView(0);
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(this);//get persistent preferences from FragmentPreferences
+
+        //int colorPOne = spref.getInt(getString(R.string.pref_player_one_color_key),getResources().getColor(R.color.colorPlayerOne));
+        int colorPTwo = spref.getInt(getString(R.string.pref_player_two_color_key),getResources().getColor(R.color.colorPlayerTwo));
+
+
+        ((TextView)view.findViewById(R.id.score_opponent_tv)).setTextColor(colorPTwo);
+        ((TextView)view.findViewById(R.id.textView2)).setTextColor(colorPTwo);
+    }
+    private void beginGame(final GoogleSignInAccount account) {
+
+        View view = navigationView.getHeaderView(0);
+        final ImageView imageView = (ImageView)view.findViewById(R.id.imageView);
+        getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Bitmap>() {
+            @NonNull
+            @Override
+            public Loader<Bitmap> onCreateLoader(int id, @Nullable Bundle args) {
+                return new ImageLoader(MainActivity.this,account.getPhotoUrl().toString());
+            }
+
+            @Override
+            public void onLoadFinished(@NonNull Loader<Bitmap> loader, Bitmap data) {
+                    imageView.setImageBitmap(data);
+            }
+
+            @Override
+            public void onLoaderReset(@NonNull Loader<Bitmap> loader) {
+
+            }
+        });
         TicTacToeFragment frag = TicTacToeFragment.newInstance(account);
         displayFragment(R.id.main,frag,TicTacToeFragment.FRAGMENT_TAG);
+        cleanUpHomeScreen();
     }
 
     public void showToast(String txt) {

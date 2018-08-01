@@ -93,7 +93,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         String p_one_name =  spref.getString(getString(R.string.pref_player_name_one_key),getString(R.string.pref_default_display_name));//get saved name otherwise default
         String p_two_name = spref.getString(getString(R.string.pref_player_name_two_key),getString(R.string.AiName));//get saved named otherwise default
 
-         ai_difficulty = spref.getString(getString(R.string.pref_difficulty_key),getString(R.string.default_difficulty));
+        ai_difficulty = spref.getString(getString(R.string.pref_difficulty_key),getString(R.string.default_difficulty));
 
         boolean isAiEnabled = spref.getBoolean(getString(R.string.pref_single_player_mode_key),true);//AI is enabled by default otherwise users option
 
@@ -101,6 +101,8 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         if(account!=null) {
             p_one_name = account.getGivenName()+" "+account.getFamilyName();
         }
+        int colorPOne = spref.getInt(getString(R.string.pref_player_one_color_key),getResources().getColor(R.color.colorPlayerOne));
+        int colorPTwo = spref.getInt(getString(R.string.pref_player_two_color_key),getResources().getColor(R.color.colorPlayerTwo));
 
         View view = inflater.inflate(R.layout.fragment_tic_tac_toe,
                 container, false);
@@ -109,6 +111,12 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         mLosesTV = (TextView)view.findViewById(R.id.score_losses_tv);
         mDrawsTV = (TextView)view.findViewById(R.id.score_ties_tv);
 
+        ((TextView)view.findViewById(R.id.player_one_tv)).setTextColor(colorPOne);
+        ((TextView)view.findViewById(R.id.player_two_tv)).setTextColor(colorPTwo);
+        ((TextView)view.findViewById(R.id.wins_tv)).setTextColor(colorPOne);
+        ((TextView)view.findViewById(R.id.loses_tv)).setTextColor(colorPTwo);
+        mWinsTV.setTextColor(colorPOne);
+        mLosesTV.setTextColor(colorPTwo);
 
         Player mPlayerOne = new Player(p_one_name,"X");
         mPlayerOne.setColor(getActivity().getResources().getColor(R.color.colorPlayerOne));
@@ -119,7 +127,7 @@ public class TicTacToeFragment extends Fragment implements ITicTacToeFragment {
         mPlayerOneTV = (TextView) view.findViewById(R.id.player_one_tv);
         mPlayerOneTV.setText(p_one_name);
         
-         mPlayerTwoTV = (TextView) view.findViewById(R.id.player_two_tv);
+        mPlayerTwoTV = (TextView) view.findViewById(R.id.player_two_tv);
         mPlayerTwoTV.setText(p_two_name);
 
         tableLayout = (TableLayout) view.findViewById(R.id.gameBoardTL);
